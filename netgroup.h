@@ -1,7 +1,9 @@
-/*	$OpenBSD: netgroup.h,v 1.8 2015/09/10 18:59:34 deraadt Exp $ */
 /*
  * Copyright (c) 1994 Christos Zoulas
  * All rights reserved.
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,10 +30,16 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
  */
-#ifndef _NETGROUP_H_
-#define	_NETGROUP_H_
+
+/* netgroup header from OpenBSD 7.0 source code: include/netgroup.h */
+
+#ifndef _NETGROUP_H
+#define	_NETGROUP_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define	_PATH_NETGROUP		"/etc/netgroup"
 
@@ -55,13 +63,13 @@ struct netgroup {
 	struct netgroup	*ng_next;	/* thread */
 };
 
-#include <sys/cdefs.h>
-
-__BEGIN_DECLS
 void	setnetgrent(const char *);
 int	getnetgrent(const char **, const char **, const char **);
 void	endnetgrent(void);
 int	innetgr(const char *, const char *, const char *, const char *);
-__END_DECLS
 
-#endif /* !_NETGROUP_H_ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif

@@ -1,7 +1,8 @@
-/*	$OpenBSD: login_cap.h,v 1.17 2021/06/03 13:19:45 deraadt Exp $	*/
-
-/*-
+/*
  * Copyright (c) 1995,1997 Berkeley Software Design, Inc. All rights reserved.
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,12 +31,16 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	BSDI $From: login_cap.h,v 2.11 1999/09/08 18:11:57 prb Exp $
  */
 
-#ifndef _LOGIN_CAP_H_
-#define _LOGIN_CAP_H_
+/* login_cap header from OpenBSD 7.0 source code: include/login_cap.h */
+
+#ifndef _LOGIN_CAP_H
+#define _LOGIN_CAP_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define	LOGIN_DEFCLASS		"default"
 #define	LOGIN_DEFSTYLE		"passwd"
@@ -88,8 +93,6 @@ typedef struct login_cap {
 	char	*lc_style;
 } login_cap_t;
 
-#include <sys/cdefs.h>
-__BEGIN_DECLS
 struct passwd;
 
 login_cap_t *login_getclass(char *);
@@ -104,6 +107,8 @@ char	*login_getstyle(login_cap_t *, char *, char *);
 int	setclasscontext(char *, unsigned int);
 int	setusercontext(login_cap_t *, struct passwd *, uid_t, unsigned int);
 
-__END_DECLS
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* _LOGIN_CAP_H_ */
+#endif

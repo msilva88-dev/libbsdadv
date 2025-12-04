@@ -1,7 +1,8 @@
-/*	$OpenBSD: auth_subr.c,v 1.56 2020/10/13 04:42:28 guenther Exp $	*/
-
 /*
  * Copyright (c) 2000-2002,2004 Todd C. Miller <millert@openbsd.org>
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,7 +16,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/*-
+/*
  * Copyright (c) 1995,1996,1997 Berkeley Software Design, Inc.
  * All rights reserved.
  *
@@ -46,30 +47,28 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	BSDI $From: auth_subr.c,v 2.4 1999/09/08 04:10:40 prb Exp $
  */
+
+/* auth_subr from OpenBSD 7.0 source code: lib/libc/gen/auth_subr.c */
 
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
-
 #include <ctype.h>
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <paths.h>
-#include <pwd.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
-
-#include <login_cap.h>
+#include "login_cap.h"
+#include "pwd.h"
 
 #define	MAXSPOOLSIZE	(8*1024)	/* Spool up to 8K of back info */
 
@@ -120,9 +119,9 @@ struct auth_session_t {
 #define	AF_INTERACTIVE		0x0001	/* This is an interactive session */
 
 /*
- * We cannot include bsd_auth.h until we define the above structures
+ * We cannot include bsd_auth_hidden.h until we define the above structures
  */
-#include <bsd_auth.h>
+#include "bsd_auth_hidden.h"
 
 /*
  * Internally used functions
@@ -752,7 +751,7 @@ auth_check_expire(auth_session_t *as)
 
 	if (as->pwd && (quad_t)as->pwd->pw_expire != 0) {
 		if (as->now.tv_sec == 0)
-			WRAP(gettimeofday)(&as->now, NULL);
+			gettimeofday(&as->now, NULL);
 		if ((quad_t)as->now.tv_sec >= (quad_t)as->pwd->pw_expire) {
 			as->state &= ~AUTH_ALLOW;
 			as->state |= AUTH_EXPIRED;
@@ -779,7 +778,7 @@ auth_check_change(auth_session_t *as)
 
 	if (as->pwd && (quad_t)as->pwd->pw_change) {
 		if (as->now.tv_sec == 0)
-			WRAP(gettimeofday)(&as->now, NULL);
+			gettimeofday(&as->now, NULL);
 		if (as->now.tv_sec >= (quad_t)as->pwd->pw_change) {
 			as->state &= ~AUTH_ALLOW;
 			as->state |= AUTH_PWEXPIRED;

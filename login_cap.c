@@ -1,7 +1,8 @@
-/*	$OpenBSD: login_cap.c,v 1.39 2021/06/03 13:19:45 deraadt Exp $	*/
-
 /*
  * Copyright (c) 2000-2004 Todd C. Miller <millert@openbsd.org>
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,7 +16,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/*-
+/*
  * Copyright (c) 1995,1997 Berkeley Software Design, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,19 +46,18 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	BSDI $From: login_cap.c,v 2.16 2000/03/22 17:10:55 donn Exp $
  */
+
+/* login_cap from OpenBSD 7.0 source code: lib/libc/gen/login_cap.c */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <login_cap.h>
 #include <paths.h>
 #include <pwd.h>
 #include <stdio.h>
@@ -65,7 +65,8 @@
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
-
+#include "features.h"
+#include "login_cap.h"
 
 static	char *_authtypes[] = { LOGIN_DEFSTYLE, 0 };
 static	char *expandstr(const char *, const struct passwd *, int);
@@ -282,7 +283,7 @@ login_getcaptime(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 	while (*res) {
 		r = strtoll(res, &ep, 0);
 		if (!ep || ep == res ||
-		    ((r == QUAD_MIN || r == QUAD_MAX) && errno == ERANGE)) {
+		    ((r == LLONG_MIN || r == LLONG_MAX) && errno == ERANGE)) {
 invalid:
 			syslog(LOG_ERR, "%s:%s=%s: invalid time",
 			    lc->lc_class, cap, sres);
@@ -364,7 +365,7 @@ login_getcapnum(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 
     	q = strtoll(res, &ep, 0);
 	if (!ep || ep == res || ep[0] ||
-	    ((q == QUAD_MIN || q == QUAD_MAX) && errno == ERANGE)) {
+	    ((q == LLONG_MIN || q == LLONG_MAX) && errno == ERANGE)) {
 		syslog(LOG_ERR, "%s:%s=%s: invalid number",
 		    lc->lc_class, cap, res);
 		free(res);
@@ -412,7 +413,7 @@ login_getcapsize(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 	errno = 0;
 	q = strtolimit(res, &ep, 0);
 	if (!ep || ep == res || (ep[0] && ep[1]) ||
-	    ((q == QUAD_MIN || q == QUAD_MAX) && errno == ERANGE)) {
+	    ((q == LLONG_MIN || q == LLONG_MAX) && errno == ERANGE)) {
 		syslog(LOG_ERR, "%s:%s=%s: invalid size",
 		    lc->lc_class, cap, res);
 		free(res);
@@ -425,7 +426,7 @@ login_getcapsize(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 DEF_WEAK(login_getcapsize);
 
 int
-login_getcapbool(login_cap_t *lc, char *cap, u_int def)
+login_getcapbool(login_cap_t *lc, char *cap, unsigned int def)
 {
     	if (!lc->lc_cap)
 		return (def);
@@ -556,7 +557,7 @@ gsetrl(login_cap_t *lc, int what, char *name, int type)
 }
 
 int
-setclasscontext(char *class, u_int flags)
+setclasscontext(char *class, unsigned int flags)
 {
 	int ret;
 	login_cap_t *lc;
@@ -571,7 +572,7 @@ setclasscontext(char *class, u_int flags)
 }
 
 int
-setusercontext(login_cap_t *lc, struct passwd *pwd, uid_t uid, u_int flags)
+setusercontext(login_cap_t *lc, struct passwd *pwd, uid_t uid, unsigned int flags)
 {
 	login_cap_t *flc;
 	quad_t p;
@@ -878,7 +879,7 @@ erange:
 	if (endptr)
 		*endptr = expr;
 	errno = ERANGE;
-	return (UQUAD_MAX);
+	return (ULLONG_MAX);
 }
 
 static
@@ -932,7 +933,7 @@ multiply(u_quad_t n1, u_quad_t n2)
 		; 
 	if (b1 + b2 - 2 > bpw) {
 		errno = ERANGE;
-		return (UQUAD_MAX);
+		return (ULLONG_MAX);
 	}
 
 	/*
@@ -959,7 +960,7 @@ multiply(u_quad_t n1, u_quad_t n2)
 
 	if (m >= ((u_quad_t)1 << (bpw-2))) {
 		errno = ERANGE;
-		return (UQUAD_MAX);
+		return (ULLONG_MAX);
 	}
 
 	m *= 4;
@@ -970,7 +971,7 @@ multiply(u_quad_t n1, u_quad_t n2)
 
 	if ((u_quad_t)(m + r) < m) {
 		errno = ERANGE;
-		return (UQUAD_MAX);
+		return (ULLONG_MAX);
 	}
 	m += r;
 

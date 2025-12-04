@@ -1,8 +1,8 @@
-/*	$OpenBSD: fparseln.c,v 1.7 2012/12/05 23:20:06 deraadt Exp $	*/
-/*	$NetBSD: fparseln.c,v 1.7 1999/07/02 15:49:12 simonb Exp $	*/
-
 /*
  * Copyright (c) 1997 Christos Zoulas.  All rights reserved.
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,11 +30,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* fparseln from OpenBSD 7.0 source code: lib/libutil/fparseln.c */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#include "util.h"
+#include "util_bsd4.h"
 
 static int isescaped(const char *, const char *, int);
 
@@ -72,7 +73,8 @@ fparseln(FILE *fp, size_t *size, size_t *lineno, const char str[3],
 {
 	static const char dstr[3] = { '\\', '\\', '#' };
 	char	*buf = NULL, *ptr, *cp, esc, con, nl, com;
-	size_t	s, len = 0;
+	size_t	s, cap = 0, len = 0;
+	ssize_t t;
 	int	cnt = 1;
 
 	if (str == NULL)
@@ -94,8 +96,10 @@ fparseln(FILE *fp, size_t *size, size_t *lineno, const char str[3],
 		if (lineno)
 			(*lineno)++;
 
-		if ((ptr = fgetln(fp, &s)) == NULL)
+		//if ((ptr = fgetln(fp, &s)) == NULL)
+		if ((t = getline(&ptr, &cap, fp)) == -1)
 			break;
+		s = (size_t)t;
 
 		if (s && com) {		/* Check and eliminate comments */
 			for (cp = ptr; cp < ptr + s; cp++)
@@ -188,6 +192,7 @@ main(argc, argv)
 	while ((ptr = fparseln(stdin, &size, &line, NULL,
 	    FPARSELN_UNESCALL)) != NULL)
 		printf("line %d (%d) |%s|\n", line, size, ptr);
+	free(ptr);
 	return 0;
 }
 

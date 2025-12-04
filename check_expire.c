@@ -1,7 +1,8 @@
-/*	$OpenBSD: check_expire.c,v 1.13 2019/06/28 13:32:43 deraadt Exp $	*/
-
 /*
  * Copyright (c) 1997 Berkeley Software Design, Inc. All rights reserved.
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,12 +31,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	BSDI $From: check_expire.c,v 2.1 1997/08/08 18:38:25 prb Exp $
  */
 
-#include <sys/types.h>
+/* check_expire from OpenBSD 7.0 source code: lib/libutil/check_expire.c */
 
+#include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <pwd.h>
@@ -44,10 +44,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <login_cap.h>
-#include <bsd_auth.h>
-
-#include "util.h"
+#include "bsd_auth.h"
+#include "login_cap.h"
+#include "pwd.h"
+#include "util_bsd4.h"
 
 static char *pwd_update(const struct passwd *, const struct passwd *);
 

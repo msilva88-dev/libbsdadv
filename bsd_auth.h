@@ -1,7 +1,8 @@
-/*	$OpenBSD: bsd_auth.h,v 1.11 2017/03/09 10:13:03 fcambus Exp $	*/
-
-/*-
+/*
  * Copyright (c) 1997 Berkeley Software Design, Inc. All rights reserved.
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,14 +31,18 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	BSDI $From: bsd_auth.h,v 2.3 1999/09/08 22:13:08 prb Exp $
  */
 
-#ifndef _BSD_AUTH_H_
-#define _BSD_AUTH_H_
+/* bsd_auth header from OpenBSD 7.0 source code: include/bsd_auth.h */
 
-#include <machine/_types.h>		/* for __va_list */
+#ifndef _BSD_AUTH_H
+#define _BSD_AUTH_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdarg.h>
 
 typedef struct auth_session_t auth_session_t;
 
@@ -51,8 +56,6 @@ typedef enum {
 	AUTHV_INTERACTIVE
 } auth_item_t;
 
-#include <sys/cdefs.h>
-__BEGIN_DECLS
 struct passwd;
 struct login_cap;
 
@@ -80,13 +83,13 @@ void	 auth_setenv(auth_session_t *);
 void	 auth_clrenv(auth_session_t *);
 
 void	 auth_setstate(auth_session_t *, int);
-int	 auth_call(auth_session_t *, char *, ...) 
+int	 auth_call(auth_session_t *, char *, ...)
 	    __attribute__((__sentinel__));
 
 int	 auth_setdata(auth_session_t *, void *, size_t);
 int	 auth_setoption(auth_session_t *, char *, char *);
 int	 auth_setpwd(auth_session_t *, struct passwd *);
-void	 auth_set_va_list(auth_session_t *, __va_list);
+void	 auth_set_va_list(auth_session_t *, va_list);
 
 struct passwd *auth_getpwd(auth_session_t *);
 
@@ -100,6 +103,8 @@ char	*auth_mkvalue(char *);
 void	 auth_checknologin(struct login_cap *);
 int	 auth_cat(char *);
 
-__END_DECLS
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* _BSD_AUTH_H_ */
+#endif

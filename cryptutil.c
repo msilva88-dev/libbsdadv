@@ -1,6 +1,8 @@
-/* $OpenBSD: cryptutil.c,v 1.12 2015/09/13 15:33:48 guenther Exp $ */
 /*
  * Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,12 +16,15 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+/* cryptutil from OpenBSD 7.0 source code: lib/libc/crypt/cryptutil.c */
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <pwd.h>
-#include <login_cap.h>
 #include <errno.h>
+#include "login_cap.h"
+#include "pwd.h"
 
 int
 crypt_checkpass(const char *pass, const char *goodhash)

@@ -13,20 +13,15 @@
  * <https://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-#ifndef _LIBBSD4_BSD_AUTH_HIDDEN_INT_H
-#define _LIBBSD4_BSD_AUTH_HIDDEN_INT_H
+#ifndef _LIBBSD4_FEATURES_INT_H
+#define _LIBBSD4_FEATURES_INT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "bsd_auth.h"
-#include "features.h"
-
-int _auth_validuser(const char *) HIDDEN;
-
-#ifdef __cplusplus
-}
+#ifdef __GNUC__
+#define DEF_WEAK(x) extern __typeof(x) x __attribute__((weak, visibility("hidden")))
+#define HIDDEN __attribute__((__visibility__("hidden")))
+#else
+#define DEF_WEAK(x)
+#define HIDDEN
 #endif
 
 #endif

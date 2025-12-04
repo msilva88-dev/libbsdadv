@@ -13,20 +13,22 @@
  * <https://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-#ifndef _LIBBSD4_BSD_AUTH_HIDDEN_INT_H
-#define _LIBBSD4_BSD_AUTH_HIDDEN_INT_H
+#ifndef _LIBBSD4_PWD_INT_H
+#define _LIBBSD4_PWD_INT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "bsd_auth.h"
+#include <pwd.h>
 #include "features.h"
 
-int _auth_validuser(const char *) HIDDEN;
+#ifndef _PASSWORD_LEN
+#define _PASSWORD_LEN 128
+#endif
 
-#ifdef __cplusplus
-}
+#ifndef _PATH_MASTERPASSWD
+#define _PATH_MASTERPASSWD "/etc/master.passwd"
+#endif
+
+#ifndef _PW_BUF_LEN
+#define _PW_BUF_LEN 1024
 #endif
 
 #endif

@@ -1,8 +1,9 @@
-/*	$OpenBSD: getnetgrent.c,v 1.28 2016/09/24 12:43:37 millert Exp $	*/
-
 /*
  * Copyright (c) 1994 Christos Zoulas
  * All rights reserved.
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,9 +32,10 @@
  * SUCH DAMAGE.
  */
 
+/* getnetgrent from OpenBSD 7.0 source code: lib/libc/gen/getnetgrent.c */
+
 #include <sys/types.h>
 #include <stdio.h>
-#include <netgroup.h>
 #include <string.h>
 #include <fcntl.h>
 #include <err.h>
@@ -43,6 +45,8 @@
 #ifdef YP
 #include <rpcsvc/ypclnt.h>
 #endif
+#include "features.h"
+#include "netgroup.h"
 
 #define _NG_STAR(s)	(((s) == NULL || *(s) == '\0') ? _ngstar : s)
 #define _NG_EMPTY(s)	((s) == NULL ? "" : s)
@@ -265,7 +269,7 @@ lookup(const char *ypdom, char *name, char **line, int bywhat)
 		ks[0] = bywhat;
 		memcpy(&ks[1], name, len - 1);
 
-		key.data = (u_char *) ks;
+		key.data = (unsigned char *) ks;
 		key.size = len;
 
 		ret = (_ng_db->get)(_ng_db, &key, &data, 0);

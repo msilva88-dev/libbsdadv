@@ -1,7 +1,8 @@
-/*	$OpenBSD: authenticate.c,v 1.28 2019/12/04 06:25:45 deraadt Exp $	*/
-
-/*-
+/*
  * Copyright (c) 1997 Berkeley Software Design, Inc. All rights reserved.
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,27 +31,25 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	BSDI $From: authenticate.c,v 2.21 1999/09/08 22:33:26 prb Exp $
  */
 
-#include <sys/stat.h>
+/* authenticate from OpenBSD 7.0 source code: lib/libc/gen/authenticate.c */
 
+#include <sys/stat.h>
 #include <ctype.h>
 #include <err.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <login_cap.h>
 #include <paths.h>
-#include <pwd.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
-
-#include <bsd_auth.h>
+#include "bsd_auth_hidden.h"
+#include "login_cap.h"
+#include "pwd.h"
 
 static int _auth_checknologin(login_cap_t *, int);
 
