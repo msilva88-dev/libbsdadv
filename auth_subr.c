@@ -791,6 +791,18 @@ auth_check_change(auth_session_t *as)
 }
 DEF_WEAK(auth_check_change);
 
+static inline void
+closefrom_int(int fd)
+{
+#if defined(USE_MUSLBSD) || defined(__OpenBSD__)
+	closefrom(fd);
+#else
+	int maxfd = sysconf(_SC_OPEN_MAX);
+	if (maxfd == -1) maxfd = 1024;
+	for (int i = fd; i < maxfd; i++) close(i);
+#endif
+}
+
 /*
  * The down and dirty call to the login script
  * okay contains the default return value, typically 0 but
@@ -874,9 +886,9 @@ auth_call(auth_session_t *as, char *path, ...)
 		if (as->fd != -1) {
 			if (dup2(as->fd, AUTH_FD) == -1)
 				err(1, "dup of auth fd");
-			closefrom(AUTH_FD + 1);
+			closefrom_int(AUTH_FD + 1);
 		} else
-			closefrom(COMM_FD + 1);
+			closefrom_int(COMM_FD + 1);
 		execve(path, argv, auth_environ);
 		syslog(LOG_ERR, "%s: %m", path);
 		err(1, "%s", path);
