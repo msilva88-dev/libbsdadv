@@ -19,12 +19,13 @@
 
 /* cryptutil from OpenBSD 7.0 source code: lib/libc/crypt/cryptutil.c */
 
-#include <stdlib.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include "login_cap.h"
 #include "pwd_int.h"
+#include "stdlib_int.h"
 
 int
 crypt_checkpass(const char *pass, const char *goodhash)

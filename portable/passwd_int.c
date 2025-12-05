@@ -39,7 +39,6 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -49,6 +48,7 @@
 #include <signal.h>
 #include "limits_int.h"
 #include "pwd_int.h"
+#include "../stdlib_int.h"
 #include "../util_int.h"
 
 static char pw_defdir[] = "/etc";
