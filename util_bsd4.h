@@ -41,7 +41,9 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+#ifdef USE_MUSLBSD
 #include <util.h>
+#endif
 
 /*
  * fparseln() specific operation flags.
