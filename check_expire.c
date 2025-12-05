@@ -45,8 +45,8 @@
 #include <time.h>
 #include "bsd_auth.h"
 #include "login_cap.h"
-#include "pwd.h"
-#include "util.h"
+#include "pwd_int.h"
+#include "util_int.h"
 
 static char *pwd_update(const struct passwd *, const struct passwd *);
 

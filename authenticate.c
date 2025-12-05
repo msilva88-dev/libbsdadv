@@ -47,9 +47,9 @@
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
-#include "bsd_auth_hidden.h"
+#include "bsd_auth_int.h"
 #include "login_cap.h"
-#include "pwd.h"
+#include "pwd_int.h"
 
 static int _auth_checknologin(login_cap_t *, int);
 

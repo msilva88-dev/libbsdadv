@@ -22,7 +22,7 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include "pwd.h"
+#include "pwd_int.h"
 
 /*
  * Measure this system's performance by measuring the time for 8 rounds.

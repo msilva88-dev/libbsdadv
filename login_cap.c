@@ -65,7 +65,7 @@
 #include <syslog.h>
 #include <unistd.h>
 #include "login_cap.h"
-#include "pwd.h"
+#include "pwd_int.h"
 
 static	char *_authtypes[] = { LOGIN_DEFSTYLE, 0 };
 static	char *expandstr(const char *, const struct passwd *, int);

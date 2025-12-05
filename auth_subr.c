@@ -68,7 +68,7 @@
 #include <syslog.h>
 #include <unistd.h>
 #include "login_cap.h"
-#include "pwd.h"
+#include "pwd_int.h"
 
 #define	MAXSPOOLSIZE	(8*1024)	/* Spool up to 8K of back info */
 
@@ -119,9 +119,9 @@ struct auth_session_t {
 #define	AF_INTERACTIVE		0x0001	/* This is an interactive session */
 
 /*
- * We cannot include bsd_auth_hidden.h until we define the above structures
+ * We cannot include bsd_auth_int.h until we define the above structures
  */
-#include "bsd_auth_hidden.h"
+#include "bsd_auth_int.h"
 
 /*
  * Internally used functions
