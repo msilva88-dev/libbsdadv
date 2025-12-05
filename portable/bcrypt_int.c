@@ -17,6 +17,9 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+/* bcrypt internal from OpenBSD 7.0 source code: lib/libc/crypt/bcrypt.c */
+
 /* This password hashing algorithm was designed by David Mazieres
  * <dm@lcs.mit.edu> and works as follows:
  *
@@ -32,14 +35,13 @@
  *
  */
 
-/* bcrypt internal from OpenBSD 7.0 source code: lib/libc/crypt/bcrypt.c */
-
 #include <sys/types.h>
 #include <ctype.h>
 #include <errno.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <time.h>
 //#include "../blf_int.h"
@@ -57,8 +59,6 @@
 
 #define	BCRYPT_SALTSPACE	(7 + (BCRYPT_MAXSALT * 4 + 2) / 3 + 1)
 #define	BCRYPT_HASHSPACE	61
-
-char   *bcrypt_gensalt(u_int8_t);
 
 static int encode_base64(char *, const u_int8_t *, size_t);
 static int decode_base64(u_int8_t *, size_t, const char *);
@@ -340,28 +340,3 @@ encode_base64(char *b64buffer, const u_int8_t *data, size_t len)
 	*bp = '\0';
 	return 0;
 }
-
-/*
- * classic interface
- */
-char *
-bcrypt_gensalt(u_int8_t log_rounds)
-{
-	static char    gsalt[BCRYPT_SALTSPACE];
-
-	bcrypt_initsalt(log_rounds, gsalt, sizeof(gsalt));
-
-	return gsalt;
-}
-
-char *
-bcrypt(const char *pass, const char *salt)
-{
-	static char    gencrypted[BCRYPT_HASHSPACE];
-
-	if (bcrypt_hashpass(pass, salt, gencrypted, sizeof(gencrypted)) != 0)
-		return NULL;
-
-	return gencrypted;
-}
-DEF_WEAK(bcrypt);

@@ -13,17 +13,17 @@
  * <https://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-#ifndef _LIBBSD4_UTIL_INT_H
-#define _LIBBSD4_UTIL_INT_H
+#ifndef _LIBBSD4_PORTABLE_LIMITS_INT_H
+#define _LIBBSD4_PORTABLE_LIMITS_INT_H
 
-#ifdef USE_MUSLBSD
-#include <util.h>
-#else
-int pw_abort(void) HIDDEN;
-void pw_copy(int, int, const struct passwd *, const struct passwd *) HIDDEN;
-void pw_init(void) HIDDEN;
-int pw_lock(int) HIDDEN;
-int pw_mkdb(char *, int) HIDDEN;
+#include <limits.h>
+
+#ifndef GID_MAX
+#define GID_MAX UINT_MAX
+#endif
+
+#ifndef UID_MAX
+#define UID_MAX UINT_MAX
 #endif
 
 #endif
