@@ -17,6 +17,7 @@
 #define _LIBBSD4_STDLIB_INT_H
 
 #include <stdlib.h>
+#include "features.h"
 
 #ifndef USE_MUSLBSD
 

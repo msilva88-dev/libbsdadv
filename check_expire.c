@@ -58,7 +58,7 @@ login_check_expire(FILE *back, struct passwd *pwd, char *class, int lastchance)
 {
 	auth_session_t *as;
 	login_cap_t *lc;
-	quad_t dead, expire, warn;
+	long long dead, expire, warn;
 	char *p;
 
 	if ((as = auth_open()) == NULL) {
@@ -78,7 +78,7 @@ login_check_expire(FILE *back, struct passwd *pwd, char *class, int lastchance)
 	auth_close(as);
 
 	if (expire != 0) {
-		fprintf(back, BI_VALUE " expire %qd\n", expire);
+		fprintf(back, BI_VALUE " expire %lld\n", expire);
 
 		if (class == NULL)
 			class = pwd->pw_class;

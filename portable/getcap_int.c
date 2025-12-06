@@ -44,10 +44,9 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "../features.h"
+#include "../stdlib_int.h"
 
 #define	BFRAG		1024
 #define	BSIZE		1024
@@ -86,6 +85,7 @@ static int	usedb = 1;
  * If (cap, '@') or (cap, terminator, '@') is found before (cap, terminator)
  * return NULL.
  */
+DEF_WEAK(cgetcap);
 char *
 cgetcap(char *buf, const char *cap, int type)
 {
@@ -127,7 +127,6 @@ cgetcap(char *buf, const char *cap, int type)
 	}
 	/* NOTREACHED */
 }
-DEF_WEAK(cgetcap);
 
 /*
  * Cgetent extracts the capability record name from the NULL terminated file
@@ -138,6 +137,7 @@ DEF_WEAK(cgetcap);
  * encountered (couldn't open/read a file, etc.), and -3 if a potential
  * reference loop is detected.
  */
+DEF_WEAK(cgetent);
 int
 cgetent(char **buf, char **db_array, const char *name)
 {
@@ -145,7 +145,6 @@ cgetent(char **buf, char **db_array, const char *name)
 
 	return (getent(buf, &dummy, db_array, NULL, name, 0, NULL));
 }
-DEF_WEAK(cgetent);
 
 /*
  * Getent implements the functions of cgetent.  If fp is non-NULL,
@@ -613,6 +612,7 @@ cgetmatch(char *buf, const char *name)
  * couldn't be found, -2 if a system error was encountered (storage
  * allocation failure).
  */
+DEF_WEAK(cgetstr);
 int
 cgetstr(char *buf, const char *cap, char **str)
 {
@@ -733,7 +733,6 @@ cgetstr(char *buf, const char *cap, char **str)
 	*str = mem;
 	return (len);
 }
-DEF_WEAK(cgetstr);
 
 /*
  * Cgetustr retrieves the value of the string capability cap from the
@@ -745,6 +744,7 @@ DEF_WEAK(cgetstr);
  * -1 if the requested string capability couldn't be found, -2 if a system
  * error was encountered (storage allocation failure).
  */
+DEF_WEAK(cgetustr);
 int
 cgetustr(char *buf, const char *cap, char **str)
 {
@@ -814,7 +814,6 @@ cgetustr(char *buf, const char *cap, char **str)
 	*str = mem;
 	return (len);
 }
-DEF_WEAK(cgetustr);
 
 /*
  * Compare name field of record.

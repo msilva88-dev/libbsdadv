@@ -78,6 +78,7 @@ static	u_quad_t strtolimit(char *, char **, int);
 static	u_quad_t strtosize(char *, char **, int);
 static	int gsetrl(login_cap_t *, int, char *, int);
 
+DEF_WEAK(login_getclass);
 login_cap_t *
 login_getclass(char *class)
 {
@@ -102,7 +103,7 @@ login_getclass(char *class)
 	if ((res = cgetent(&lc->lc_cap, classfiles, lc->lc_class)) != 0) {
 		lc->lc_cap = 0;
 		switch (res) {
-		case 1: 
+		case 1:
 			syslog(LOG_ERR, "%s: couldn't resolve 'tc'",
 				lc->lc_class);
 			break;
@@ -140,8 +141,8 @@ login_getclass(char *class)
 	}
 	return (lc);
 }
-DEF_WEAK(login_getclass);
 
+DEF_WEAK(login_getstyle);
 char *
 login_getstyle(login_cap_t *lc, char *style, char *atype)
 {
@@ -188,7 +189,7 @@ login_getstyle(login_cap_t *lc, char *style, char *atype)
 
 	if (!style)
 		style = authtypes[0];
-		
+
 	while (*authtypes && strcmp(style, *authtypes))
 		++authtypes;
 
@@ -201,8 +202,8 @@ login_getstyle(login_cap_t *lc, char *style, char *atype)
 	free(f2);
 	return (lc->lc_style);
 }
-DEF_WEAK(login_getstyle);
 
+DEF_WEAK(login_getcapstr);
 char *
 login_getcapstr(login_cap_t *lc, char *cap, char *def, char *e)
 {
@@ -236,8 +237,8 @@ login_getcapstr(login_cap_t *lc, char *cap, char *def, char *e)
 		free(res);
 	return(str);
 }
-DEF_WEAK(login_getcapstr);
 
+DEF_WEAK(login_getcaptime);
 quad_t
 login_getcaptime(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 {
@@ -321,8 +322,8 @@ invalid:
 	free(sres);
 	return (q);
 }
-DEF_WEAK(login_getcaptime);
 
+DEF_WEAK(login_getcapnum);
 quad_t
 login_getcapnum(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 {
@@ -375,8 +376,8 @@ login_getcapnum(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 	free(res);
 	return (q);
 }
-DEF_WEAK(login_getcapnum);
 
+DEF_WEAK(login_getcapsize);
 quad_t
 login_getcapsize(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 {
@@ -401,7 +402,7 @@ login_getcapsize(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 		errno = ERANGE;
 		return (e);
 	default:
-		if (stat >= 0) 
+		if (stat >= 0)
 			break;
 		free(res);
 		syslog(LOG_ERR, "%s: unexpected error with capability %s",
@@ -423,8 +424,8 @@ login_getcapsize(login_cap_t *lc, char *cap, quad_t def, quad_t e)
 	free(res);
 	return (q);
 }
-DEF_WEAK(login_getcapsize);
 
+DEF_WEAK(login_getcapbool);
 int
 login_getcapbool(login_cap_t *lc, char *cap, unsigned int def)
 {
@@ -433,8 +434,8 @@ login_getcapbool(login_cap_t *lc, char *cap, unsigned int def)
 
 	return (cgetcap(lc->lc_cap, cap, ':') != NULL);
 }
-DEF_WEAK(login_getcapbool);
 
+DEF_WEAK(login_close);
 void
 login_close(login_cap_t *lc)
 {
@@ -445,7 +446,6 @@ login_close(login_cap_t *lc)
 		free(lc);
 	}
 }
-DEF_WEAK(login_close);
 
 #define	CTIME	1
 #define	CSIZE	2
@@ -571,6 +571,7 @@ setclasscontext(char *class, unsigned int flags)
 	return (ret);
 }
 
+DEF_WEAK(setusercontext);
 int
 setusercontext(login_cap_t *lc, struct passwd *pwd, uid_t uid, unsigned int flags)
 {
@@ -678,7 +679,6 @@ setusercontext(login_cap_t *lc, struct passwd *pwd, uid_t uid, unsigned int flag
 	login_close(flc);
 	return (0);
 }
-DEF_WEAK(setusercontext);
 
 /*
  * Look up "path" for this user in login.conf and replace whitespace
@@ -724,7 +724,6 @@ setuserpath(login_cap_t *lc, const struct passwd *pwd)
 			*np++ = *op++;
 			break;
 		}
-		
 	}
 	*np = '\0';
 setit:
@@ -810,8 +809,7 @@ login_setenv(char *name, char *ovalue, const struct passwd *pwd, int ispath)
  *	   separated by x (also * for backwards compatibility), specifying
  *	   the product of the indicated values.
  */
-static
-u_quad_t
+static u_quad_t
 strtosize(char *str, char **endptr, int radix)
 {
 	u_quad_t num, num2;
@@ -882,8 +880,7 @@ erange:
 	return (ULLONG_MAX);
 }
 
-static
-u_quad_t
+static u_quad_t
 strtolimit(char *str, char **endptr, int radix)
 {
 	if (strcasecmp(str, "infinity") == 0 || strcasecmp(str, "inf") == 0) {
@@ -928,9 +925,9 @@ multiply(u_quad_t n1, u_quad_t n2)
 	 * is not done then the first multiply below may overflow.)
 	 */
 	for (b1 = bpw; (((u_quad_t)1 << (b1-1)) & n1) == 0; --b1)
-		; 
+		;
 	for (b2 = bpw; (((u_quad_t)1 << (b2-1)) & n2) == 0; --b2)
-		; 
+		;
 	if (b1 + b2 - 2 > bpw) {
 		errno = ERANGE;
 		return (ULLONG_MAX);

@@ -146,19 +146,20 @@ static va_list nilap;
 /*
  * Quick one liners that only exist to keep auth_session_t opaque
  */
-void	auth_setstate(auth_session_t *as, int s){ as->state = s; }
-void	auth_set_va_list(auth_session_t *as, va_list ap) { va_copy(as->ap, ap); }
-int	auth_getstate(auth_session_t *as)	{ return (as->state); }
-struct passwd *auth_getpwd(auth_session_t *as)	{ return (as->pwd); }
 DEF_WEAK(auth_setstate);
 DEF_WEAK(auth_set_va_list);
 DEF_WEAK(auth_getstate);
 DEF_WEAK(auth_getpwd);
+void	auth_setstate(auth_session_t *as, int s){ as->state = s; }
+void	auth_set_va_list(auth_session_t *as, va_list ap) { va_copy(as->ap, ap); }
+int	auth_getstate(auth_session_t *as)	{ return (as->state); }
+struct passwd *auth_getpwd(auth_session_t *as)	{ return (as->pwd); }
 
 /*
  * Open a new BSD Authentication session with the default service
  * (which can be changed later).
  */
+DEF_WEAK(auth_open);
 auth_session_t *
 auth_open(void)
 {
@@ -171,11 +172,11 @@ auth_open(void)
 
 	return (as);
 }
-DEF_WEAK(auth_open);
 
 /*
  * Clean the specified BSD Authentication session.
  */
+DEF_WEAK(auth_clean);
 void
 auth_clean(auth_session_t *as)
 {
@@ -218,12 +219,12 @@ auth_clean(auth_session_t *as)
 		as->fd = -1;
 	}
 }
-DEF_WEAK(auth_clean);
 
 /*
  * Close the specified BSD Authentication session.
  * Return 0 if not authenticated.
  */
+DEF_WEAK(auth_close);
 int
 auth_close(auth_session_t *as)
 {
@@ -291,12 +292,12 @@ auth_close(auth_session_t *as)
 	free(as);
 	return (s);
 }
-DEF_WEAK(auth_close);
 
 /*
  * Request a challenge for the session.
  * The name and style must have already been specified
  */
+DEF_WEAK(auth_challenge);
 char *
 auth_challenge(auth_session_t *as)
 {
@@ -324,13 +325,13 @@ auth_challenge(auth_session_t *as)
 	as->index = 0;	/* toss our data */
 	return (as->challenge);
 }
-DEF_WEAK(auth_challenge);
 
 /*
  * Set/unset the requested environment variables.
  * Mark the variables as set so they will not be set a second time.
  * XXX - should provide a way to detect setenv() failure.
  */
+DEF_WEAK(auth_setenv);
 void
 auth_setenv(auth_session_t *as)
 {
@@ -381,11 +382,11 @@ auth_setenv(auth_session_t *as)
 			;
 	}
 }
-DEF_WEAK(auth_setenv);
 
 /*
  * Clear out any requested environment variables.
  */
+DEF_WEAK(auth_clrenv);
 void
 auth_clrenv(auth_session_t *as)
 {
@@ -406,8 +407,8 @@ auth_clrenv(auth_session_t *as)
 			;
 	}
 }
-DEF_WEAK(auth_clrenv);
 
+DEF_WEAK(auth_getitem);
 char *
 auth_getitem(auth_session_t *as, auth_item_t item)
 {
@@ -431,8 +432,8 @@ auth_getitem(auth_session_t *as, auth_item_t item)
 	}
 	return (NULL);
 }
-DEF_WEAK(auth_getitem);
 
+DEF_WEAK(auth_setitem);
 int
 auth_setitem(auth_session_t *as, auth_item_t item, char *value)
 {
@@ -520,8 +521,8 @@ auth_setitem(auth_session_t *as, auth_item_t item, char *value)
 		return (-1);
 	}
 }
-DEF_WEAK(auth_setitem);
 
+DEF_WEAK(auth_setoption);
 int
 auth_setoption(auth_session_t *as, char *n, char *v)
 {
@@ -544,8 +545,8 @@ auth_setoption(auth_session_t *as, char *n, char *v)
 	as->optlist = opt;
 	return(0);
 }
-DEF_WEAK(auth_setoption);
 
+DEF_WEAK(auth_clroptions);
 void
 auth_clroptions(auth_session_t *as)
 {
@@ -556,8 +557,8 @@ auth_clroptions(auth_session_t *as)
 		free(opt);
 	}
 }
-DEF_WEAK(auth_clroptions);
 
+DEF_WEAK(auth_clroption);
 void
 auth_clroption(auth_session_t *as, char *option)
 {
@@ -586,8 +587,8 @@ auth_clroption(auth_session_t *as, char *option)
 		opt = oopt;
 	}
 }
-DEF_WEAK(auth_clroption);
 
+DEF_WEAK(auth_setdata);
 int
 auth_setdata(auth_session_t *as, void *ptr, size_t len)
 {
@@ -613,8 +614,8 @@ auth_setdata(auth_session_t *as, void *ptr, size_t len)
 	}
 	return (0);
 }
-DEF_WEAK(auth_setdata);
 
+DEF_WEAK(auth_setpwd);
 int
 auth_setpwd(auth_session_t *as, struct passwd *pwd)
 {
@@ -658,8 +659,8 @@ auth_setpwd(auth_session_t *as, struct passwd *pwd)
 	as->pwd = pwd;
 	return (0);
 }
-DEF_WEAK(auth_setpwd);
 
+DEF_WEAK(auth_getvalue);
 char *
 auth_getvalue(auth_session_t *as, char *what)
 {
@@ -735,8 +736,8 @@ next:
 	}
 	return (NULL);
 }
-DEF_WEAK(auth_getvalue);
 
+DEF_WEAK(auth_check_expire);
 quad_t
 auth_check_expire(auth_session_t *as)
 {
@@ -762,8 +763,8 @@ auth_check_expire(auth_session_t *as)
 	}
 	return (0);
 }
-DEF_WEAK(auth_check_expire);
 
+DEF_WEAK(auth_check_change);
 quad_t
 auth_check_change(auth_session_t *as)
 {
@@ -789,7 +790,6 @@ auth_check_change(auth_session_t *as)
 	}
 	return (0);
 }
-DEF_WEAK(auth_check_change);
 
 static inline void
 closefrom_int(int fd)
@@ -813,6 +813,7 @@ closefrom_int(int fd)
  *
  * Any data will be sent to (and freed by) the script
  */
+DEF_WEAK(auth_call);
 int
 auth_call(auth_session_t *as, char *path, ...)
 {
@@ -1005,7 +1006,6 @@ fail:
 	}
 	return (okay);
 }
-DEF_WEAK(auth_call);
 
 static void
 _recv_fd(auth_session_t *as, int fd)
@@ -1037,7 +1037,7 @@ _recv_fd(auth_session_t *as, int fd)
 			    cmp->cmsg_type);
 		else if (cmp->cmsg_len != CMSG_LEN(sizeof(int)))
 			syslog(LOG_ERR, "bad cmsg_len %d",
-			    cmp->cmsg_len);
+			    (int)cmp->cmsg_len);
 		else {
 			if (as->fd != -1)
 				close(as->fd);

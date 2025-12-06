@@ -22,13 +22,13 @@
 
 #include <errno.h>
 #include <limits.h>
-#include <stdlib.h>
-#include "../features.h"
+#include "../stdlib_int.h"
 
 #define	INVALID		1
 #define	TOOSMALL	2
 #define	TOOLARGE	3
 
+DEF_WEAK(strtonum);
 long long
 strtonum(const char *numstr, long long minval, long long maxval,
     const char **errstrp)
@@ -67,4 +67,3 @@ strtonum(const char *numstr, long long minval, long long maxval,
 
 	return (ll);
 }
-DEF_WEAK(strtonum);

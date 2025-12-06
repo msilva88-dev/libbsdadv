@@ -111,7 +111,6 @@ _ng_sl_init(void)
 	return sl;
 }
 
-
 /*
  * _ng_sl_add(): Add an item to the string list
  */
@@ -134,7 +133,6 @@ _ng_sl_add(struct stringlist *sl, char *name)
 	return 0;
 }
 
-
 /*
  * _ng_sl_free(): Free a stringlist
  */
@@ -150,7 +148,6 @@ _ng_sl_free(struct stringlist *sl, int all)
 	free(sl);
 }
 
-
 /*
  * sl_find(): Find a name in the string list
  */
@@ -165,7 +162,6 @@ _ng_sl_find(struct stringlist *sl, char *name)
 
 	return NULL;
 }
-
 
 /*
  * getstring(): Get a string delimited by the character, skipping leading and
@@ -209,7 +205,6 @@ getstring(char **pp, int del, char **str)
 	return 1;
 }
 
-
 /*
  * getnetgroup(): Parse a netgroup, and advance the pointer
  */
@@ -248,7 +243,6 @@ badhost:
 	free(ng);
 	return NULL;
 }
-
 
 /*
  * lookup(): Find the given key in the database or yp, and return its value
@@ -320,7 +314,6 @@ lookup(const char *ypdom, char *name, char **line, int bywhat)
 	return 0;
 }
 
-
 /*
  * _ng_parse(): Parse a line and return: _NG_ERROR: Syntax Error _NG_NONE:
  * line was empty or a comment _NG_GROUP: line had a netgroup definition,
@@ -363,7 +356,6 @@ _ng_parse(char **p, char **name, struct netgroup **ng)
 	}
 	return _NG_NONE;
 }
-
 
 /*
  * addgroup(): Recursively add all the members of the netgroup to this group
@@ -420,7 +412,6 @@ addgroup(char *ypdom, struct stringlist *sl, char *grp)
 	}
 }
 
-
 /*
  * in_check(): Compare the spec with the netgroup
  */
@@ -442,7 +433,6 @@ in_check(const char *host, const char *user, const char *domain,
 
 	return 1;
 }
-
 
 /*
  * in_find(): Find a match for the host, user, domain spec
@@ -511,7 +501,6 @@ in_find(char *ypdom, struct stringlist *sl, char *grp, const char *host,
 	}
 }
 
-
 /*
  * _ng_makekey(): Make a key from the two names given. The key is of the form
  * <name1>.<name2> Names strings are replaced with * if they are empty;
@@ -540,7 +529,6 @@ _ng_print(char *buf, size_t len, const struct netgroup *ng)
 	    _NG_EMPTY(ng->ng_user), _NG_EMPTY(ng->ng_domain));
 }
 
-
 /*
  * in_lookup1(): Fast lookup for a key in the appropriate map
  */
@@ -560,7 +548,6 @@ in_lookup1(const char *ypdom, const char *key, const char *domain, int map)
 	free(ptr);
 	return res ? line : NULL;
 }
-
 
 /*
  * in_lookup(): Fast lookup for a key in the appropriate map
@@ -605,7 +592,7 @@ in_lookup(const char *ypdom, const char *group, const char *key,
 	return 0;
 }
 
-
+DEF_WEAK(endnetgrent);
 void
 endnetgrent(void)
 {
@@ -624,9 +611,8 @@ endnetgrent(void)
 	}
 #endif
 }
-DEF_WEAK(endnetgrent);
 
-
+DEF_WEAK(setnetgrent);
 void
 setnetgrent(const char *ng)
 {
@@ -669,9 +655,8 @@ setnetgrent(const char *ng)
 	_nghead = _nglist;
 	_ng_sl_free(sl, 1);
 }
-DEF_WEAK(setnetgrent);
 
-
+DEF_WEAK(getnetgrent);
 int
 getnetgrent(const char **host, const char **user, const char **domain)
 {
@@ -686,9 +671,8 @@ getnetgrent(const char **host, const char **user, const char **domain)
 
 	return 1;
 }
-DEF_WEAK(getnetgrent);
 
-
+DEF_WEAK(innetgr);
 int
 innetgr(const char *grp, const char *host, const char *user, const char *domain)
 {
@@ -746,4 +730,3 @@ innetgr(const char *grp, const char *host, const char *user, const char *domain)
 
 	return found;
 }
-DEF_WEAK(innetgr);

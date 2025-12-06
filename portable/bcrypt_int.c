@@ -38,12 +38,12 @@
 #include <sys/types.h>
 #include <ctype.h>
 #include <errno.h>
-#include <pwd.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
 //#include "../blf_int.h"
+#include "../pwd_int.h"
 #include "stdlib_int.h"
 
 /* This implementation is adaptable to current computing power.
@@ -82,8 +82,8 @@ bcrypt_initsalt(int log_rounds, uint8_t *salt, size_t saltbuflen)
 	else if (log_rounds > 31)
 		log_rounds = 31;
 
-	snprintf(salt, saltbuflen, "$2b$%2.2u$", log_rounds);
-	encode_base64(salt + 7, csalt, sizeof(csalt));
+	snprintf((char *)salt, saltbuflen, "$2b$%2.2u$", log_rounds);
+	encode_base64((char *)salt + 7, csalt, sizeof(csalt));
 
 	return 0;
 }
@@ -205,6 +205,7 @@ inval:
 /*
  * user friendly functions
  */
+DEF_WEAK(bcrypt_newhash);
 int
 bcrypt_newhash(const char *pass, int log_rounds, char *hash, size_t hashlen)
 {
@@ -219,8 +220,8 @@ bcrypt_newhash(const char *pass, int log_rounds, char *hash, size_t hashlen)
 	explicit_bzero(salt, sizeof(salt));
 	return 0;
 }
-DEF_WEAK(bcrypt_newhash);
 
+DEF_WEAK(bcrypt_checkpass);
 int
 bcrypt_checkpass(const char *pass, const char *goodhash)
 {
@@ -237,7 +238,6 @@ bcrypt_checkpass(const char *pass, const char *goodhash)
 	explicit_bzero(hash, sizeof(hash));
 	return 0;
 }
-DEF_WEAK(bcrypt_checkpass);
 
 /*
  * internal utilities
@@ -269,7 +269,7 @@ static int
 decode_base64(u_int8_t *buffer, size_t len, const char *b64data)
 {
 	u_int8_t *bp = buffer;
-	const u_int8_t *p = b64data;
+	const u_int8_t *p = (const u_int8_t *)b64data;
 	u_int8_t c1, c2, c3, c4;
 
 	while (bp < buffer + len) {
@@ -311,7 +311,7 @@ decode_base64(u_int8_t *buffer, size_t len, const char *b64data)
 static int
 encode_base64(char *b64buffer, const u_int8_t *data, size_t len)
 {
-	u_int8_t *bp = b64buffer;
+	u_int8_t *bp = (u_int8_t *)b64buffer;
 	const u_int8_t *p = data;
 	u_int8_t c1, c2;
 

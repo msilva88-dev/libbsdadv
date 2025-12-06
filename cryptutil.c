@@ -20,13 +20,14 @@
 /* cryptutil from OpenBSD 7.0 source code: lib/libc/crypt/cryptutil.c */
 
 #include <sys/types.h>
-#include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include "login_cap.h"
 #include "pwd_int.h"
 #include "stdlib_int.h"
+#include "unistd_bsd4.h"
 
+DEF_WEAK(crypt_checkpass);
 int
 crypt_checkpass(const char *pass, const char *goodhash)
 {
@@ -54,8 +55,8 @@ fail:
 	errno = EACCES;
 	return -1;
 }
-DEF_WEAK(crypt_checkpass);
 
+DEF_WEAK(crypt_newhash);
 int
 crypt_newhash(const char *pass, const char *pref, char *hash, size_t hashlen)
 {
@@ -100,4 +101,3 @@ crypt_newhash(const char *pass, const char *pref, char *hash, size_t hashlen)
 err:
 	return rv;
 }
-DEF_WEAK(crypt_newhash);

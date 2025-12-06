@@ -53,6 +53,7 @@
 
 static int _auth_checknologin(login_cap_t *, int);
 
+DEF_WEAK(auth_mkvalue);
 char *
 auth_mkvalue(char *value)
 {
@@ -99,15 +100,14 @@ auth_mkvalue(char *value)
 	*p = '\0';
 	return (big);
 }
-DEF_WEAK(auth_mkvalue);
 
+DEF_WEAK(auth_checknologin);
 void
 auth_checknologin(login_cap_t *lc)
 {
 	if (_auth_checknologin(lc, 1))
 		exit(1);
 }
-DEF_WEAK(auth_checknologin);
 
 static int
 _auth_checknologin(login_cap_t *lc, int print)
@@ -157,6 +157,7 @@ print_nologin:
 	return (-1);
 }
 
+DEF_WEAK(auth_cat);
 int
 auth_cat(char *file)
 {
@@ -170,7 +171,6 @@ auth_cat(char *file)
 	(void)close(fd);
 	return (1);
 }
-DEF_WEAK(auth_cat);
 
 int
 _auth_validuser(const char *name)
@@ -183,6 +183,7 @@ _auth_validuser(const char *name)
 	return 1;
 }
 
+DEF_WEAK(auth_approval);
 int
 auth_approval(auth_session_t *as, login_cap_t *lc, char *name, char *type)
 {
@@ -318,8 +319,8 @@ out:
 		return (auth_close(as));
 	return (auth_getstate(as) & AUTH_ALLOW);
 }
-DEF_WEAK(auth_approval);
 
+DEF_WEAK(auth_usercheck);
 auth_session_t *
 auth_usercheck(char *name, char *style, char *type, char *password)
 {
@@ -382,8 +383,8 @@ auth_usercheck(char *name, char *style, char *type, char *password)
 	login_close(lc);
 	return (as);
 }
-DEF_WEAK(auth_usercheck);
 
+DEF_WEAK(auth_userokay);
 int
 auth_userokay(char *name, char *style, char *type, char *password)
 {
@@ -393,8 +394,8 @@ auth_userokay(char *name, char *style, char *type, char *password)
 
 	return (as != NULL ? auth_close(as) : 0);
 }
-DEF_WEAK(auth_userokay);
 
+DEF_WEAK(auth_userchallenge);
 auth_session_t *
 auth_userchallenge(char *name, char *style, char *type, char **challengep)
 {
@@ -451,8 +452,8 @@ auth_userchallenge(char *name, char *style, char *type, char **challengep)
 	*challengep = auth_challenge(as);
 	return (as);
 }
-DEF_WEAK(auth_userchallenge);
 
+DEF_WEAK(auth_userresponse);
 int
 auth_userresponse(auth_session_t *as, char *response, int more)
 {
@@ -505,7 +506,6 @@ auth_userresponse(auth_session_t *as, char *response, int more)
 		return (auth_close(as));
 	return (auth_getstate(as) & AUTH_ALLOW);
 }
-DEF_WEAK(auth_userresponse);
 
 /*
  * Authenticate name with the specified style.
@@ -516,6 +516,7 @@ DEF_WEAK(auth_userresponse);
  * Use auth_close() or auth_getstate() to determine if the authentication
  * worked.
  */
+DEF_WEAK(auth_verify);
 auth_session_t *
 auth_verify(auth_session_t *as, char *style, char *name, ...)
 {
@@ -548,4 +549,3 @@ auth_verify(auth_session_t *as, char *style, char *name, ...)
 	va_end(ap);
 	return (as);
 }
-DEF_WEAK(auth_verify);
