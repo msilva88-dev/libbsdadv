@@ -41,7 +41,7 @@
 #include "stdlib_int.h"
 
 #define KEYSTREAM_ONLY
-//#include "chacha_private.h"
+#include "chacha_int.h"
 
 #define minimum(a, b) ((a) < (b) ? (a) : (b))
 
