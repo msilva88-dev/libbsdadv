@@ -44,7 +44,7 @@
 
 #include "features.h"
 
-#ifdef USE_MUSLBSD
+#ifdef MUSL_WITH_BSD
 #include <pwd.h>
 #else
 

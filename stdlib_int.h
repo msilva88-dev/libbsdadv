@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include "features.h"
 
-#ifndef USE_MUSLBSD
+#ifndef MUSL_WITH_BSD
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +35,6 @@ long long strtonum(const char *, long long, long long, const char **) HIDDEN;
 }
 #endif
 
-#endif /* ! USE_MUSLBSD */
+#endif /* ! MUSL_WITH_BSD */
 
 #endif

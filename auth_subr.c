@@ -794,7 +794,7 @@ auth_check_change(auth_session_t *as)
 static inline void
 closefrom_int(int fd)
 {
-#if defined(USE_MUSLBSD) || defined(__OpenBSD__)
+#if defined(MUSL_WITH_BSD) || defined(__OpenBSD__)
 	closefrom(fd);
 #else
 	int maxfd = sysconf(_SC_OPEN_MAX);
