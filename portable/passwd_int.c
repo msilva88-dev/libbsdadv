@@ -32,6 +32,7 @@
 
 /* passwd internal from OpenBSD 7.0 source code: lib/libutil/passwd.c */
 
+#define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>

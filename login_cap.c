@@ -50,6 +50,7 @@
 
 /* login_cap from OpenBSD 7.0 source code: lib/libc/gen/login_cap.c */
 
+#define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
