@@ -147,14 +147,19 @@ LD_CMD != printf "%s" "$(LD_PATH_CMD)" | sed "s|.*/||" 2>/dev/null
 ## Compiler
 
 # Optional Feature Flags
-DFT_OPTFLAGS_CMD != sh -c '\
-_PRINT=""; \
-[ "$(ENABLE_BLF)" = "true" ] && _PRINT="-DBLF"; \
-[ "$(ENABLE_BSDDB)" = "true" ] && _PRINT=${_PRINT}" -DBSDDB"; \
-[ "$(ENABLE_YP)" = "true" ] && _PRINT=${_PRINT}" -DYP"; \
-printf "%s" "${_PRINT}" \
+OPTFLAG_BLF_CMD != sh -c '\
+[ "$(ENABLE_BLF)" = "true" ] && printf "%s%s" '-D' "BLF"; \
 ' 2>/dev/null
-DFT_OPTFLAGS ::= $(DFT_OPTFLAGS_CMD)
+OPTFLAG_BLF ::= $(OPTFLAG_BLF_CMD)
+OPTFLAG_BSDDB_CMD != sh -c '\
+[ "$(ENABLE_BSDDB)" = "true" ] && printf "%s%s" '-D' "BSDDB"; \
+' 2>/dev/null
+OPTFLAG_BSDDB ::= $(OPTFLAG_BSDDB_CMD)
+OPTFLAG_YP_CMD != sh -c '\
+[ "$(ENABLE_YP)" = "true" ] && printf "%s%s" '-D' "YP"; \
+' 2>/dev/null
+OPTFLAG_YP ::= $(OPTFLAG_YP_CMD)
+DFT_OPTFLAGS ::= $(OPTFLAG_BLF) $(OPTFLAG_BSDDB) $(OPTFLAG_YP)
 
 # Set appropriate flags in clang v11, GCC v8 and Binutils as v2.34
 # (any language)
