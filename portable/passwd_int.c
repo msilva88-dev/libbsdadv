@@ -79,7 +79,7 @@ pw_lock(int retries)
 
 	if (!pw_lck) {
 		errno = EINVAL;
-		return (-1);
+		return -1;
 	}
 	/* Acquire the lock file.  */
 	old_mode = umask(0);
@@ -89,7 +89,7 @@ pw_lock(int retries)
 		fd = open(pw_lck, O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC, 0600);
 	}
 	(void) umask(old_mode);
-	return (fd);
+	return fd;
 }
 
 int
@@ -101,12 +101,12 @@ pw_mkdb(char *username, int flags)
 	struct stat sb;
 
 	if (pw_lck == NULL)
-		return(-1);
+		return -1;
 
 	/* A zero length passwd file is never ok */
 	if (stat(pw_lck, &sb) == 0 && sb.st_size == 0) {
 		warnx("%s is zero length", pw_lck);
-		return (-1);
+		return -1;
 	}
 
 	ac = 0;
@@ -126,7 +126,7 @@ pw_mkdb(char *username, int flags)
 
 	pid = vfork();
 	if (pid == -1)
-		return (-1);
+		return -1;
 	if (pid == 0) {
 		if (pw_lck)
 			execv(_PATH_PWD_MKDB, av);
@@ -134,14 +134,14 @@ pw_mkdb(char *username, int flags)
 	}
 	pid = waitpid(pid, &pstat, 0);
 	if (pid == -1 || !WIFEXITED(pstat) || WEXITSTATUS(pstat) != 0)
-		return (-1);
-	return (0);
+		return -1;
+	return 0;
 }
 
 int
 pw_abort(void)
 {
-	return (pw_lck ? unlink(pw_lck) : -1);
+	return pw_lck ? unlink(pw_lck) : -1;
 }
 
 /* Everything below this point is intended for the convenience of programs
@@ -193,7 +193,7 @@ pw_init(void)
 static int
 pw_equal(const struct passwd *pw1, const struct passwd *pw2)
 {
-	return (strcmp(pw1->pw_name, pw2->pw_name) == 0 &&
+	return strcmp(pw1->pw_name, pw2->pw_name) == 0 &&
 	    pw1->pw_uid == pw2->pw_uid &&
 	    pw1->pw_gid == pw2->pw_gid &&
 	    strcmp(pw1->pw_class, pw2->pw_class) == 0 &&
@@ -201,7 +201,7 @@ pw_equal(const struct passwd *pw1, const struct passwd *pw2)
 	    pw1->pw_expire == pw2->pw_expire &&
 	    strcmp(pw1->pw_gecos, pw2->pw_gecos) == 0 &&
 	    strcmp(pw1->pw_dir, pw2->pw_dir) == 0 &&
-	    strcmp(pw1->pw_shell, pw2->pw_shell) == 0);
+	    strcmp(pw1->pw_shell, pw2->pw_shell) == 0;
 }
 
 static int
@@ -317,14 +317,14 @@ pw_scan(char *bp, struct passwd *pw, int *flags)
 	if (errstr != NULL) {
 		if (*p != '\0') {
 			warnx("uid is %s", errstr);
-			return (0);
+			return 0;
 		}
 		if (flags != NULL)
 			*flags |= _PASSWORD_NOUID;
 	}
 	if (root && pw->pw_uid) {
 		warnx("root uid should be 0");
-		return (0);
+		return 0;
 	}
 
 	if (!(p = strsep(&bp, ":")))			/* gid */
@@ -333,7 +333,7 @@ pw_scan(char *bp, struct passwd *pw, int *flags)
 	if (errstr != NULL) {
 		if (*p != '\0') {
 			warnx("gid is %s", errstr);
-			return (0);
+			return 0;
 		}
 		if (flags != NULL)
 			*flags |= _PASSWORD_NOGID;
@@ -370,10 +370,10 @@ pw_scan(char *bp, struct passwd *pw, int *flags)
 
 	if ((p = strsep(&bp, ":"))) {			/* too many */
 fmt:		warnx("corrupted entry");
-		return (0);
+		return 0;
 	}
 
-	return (1);
+	return 1;
 }
 
 __dead void

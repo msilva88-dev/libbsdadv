@@ -99,7 +99,7 @@ cgetcap(char *buf, const char *cap, int type)
 		 */
 		for (;;)
 			if (*bp == '\0')
-				return (NULL);
+				return NULL;
 			else
 				if (*bp++ == ':')
 					break;
@@ -112,16 +112,16 @@ cgetcap(char *buf, const char *cap, int type)
 		if (*cp != '\0')
 			continue;
 		if (*bp == '@')
-			return (NULL);
+			return NULL;
 		if (type == ':') {
 			if (*bp != '\0' && *bp != ':')
 				continue;
-			return(bp);
+			return bp;
 		}
 		if (*bp != type)
 			continue;
 		bp++;
-		return (*bp == '@' ? NULL : bp);
+		return *bp == '@' ? NULL : bp;
 	}
 	/* NOTREACHED */
 }
@@ -141,7 +141,7 @@ cgetent(char **buf, char **db_array, const char *name)
 {
 	unsigned int dummy;
 
-	return (getent(buf, &dummy, db_array, NULL, name, 0, NULL));
+	return getent(buf, &dummy, db_array, NULL, name, 0, NULL);
 }
 
 /*
@@ -182,7 +182,7 @@ getent(char **cap, unsigned int *len, char **db_array, FILE *fp,
 	 * MAX_RECURSION times.
 	 */
 	if (depth > MAX_RECURSION)
-		return (-3);
+		return -3;
 
 	opened = 0;
 
@@ -192,7 +192,7 @@ getent(char **cap, unsigned int *len, char **db_array, FILE *fp,
 	if (depth == 0 && toprec != NULL && cgetmatch(toprec, name) == 0) {
 		opened++;
 		if ((record = malloc(topreclen + 1 + BFRAG)) == NULL)
-			return (-2);
+			return -2;
 		memcpy(record, toprec, topreclen + 1);
 		myfd = 0;
 		db_p = db_array;
@@ -204,7 +204,7 @@ getent(char **cap, unsigned int *len, char **db_array, FILE *fp,
 	 * Allocate first chunk of memory.
 	 */
 	if ((record = malloc(BFRAG)) == NULL)
-		return (-2);
+		return -2;
 	r_end = record + BFRAG;
 	foundit = 0;
 	/*
@@ -239,16 +239,16 @@ getent(char **cap, unsigned int *len, char **db_array, FILE *fp,
 				/* save the data; close frees it */
 				clen = strlen(dbrecord);
 				if ((cbuf = malloc(clen + 1)) == NULL)
-					return (-2);
+					return -2;
 				memcpy(cbuf, dbrecord, clen + 1);
 				if (capdbp->close(capdbp) < 0) {
 					free(cbuf);
-					return (-2);
+					return -2;
 				}
 				/* assume tc='s have been expanded??? */
 				*len = clen;
 				*cap = cbuf;
-				return (retval);
+				return retval;
 			} else {
 #else
 			{
@@ -301,7 +301,7 @@ getent(char **cap, unsigned int *len, char **db_array, FILE *fp,
 							break;
 						}
 						free(record);
-						return (-2);
+						return -2;
 					}
 					b_end = buf+n;
 					bp = buf;
@@ -335,7 +335,7 @@ getent(char **cap, unsigned int *len, char **db_array, FILE *fp,
 						if (myfd)
 							(void)fclose(fp);
 						errno = ENOMEM;
-						return (-2);
+						return -2;
 					}
 					record = nrecord;
 					r_end = record + newsize;
@@ -374,7 +374,7 @@ getent(char **cap, unsigned int *len, char **db_array, FILE *fp,
 
 	if (!foundit) {
 		free(record);
-		return (opened ? -1 : -2);
+		return opened ? -1 : -2;
 	}
 
 	/*
@@ -427,7 +427,7 @@ tc_exp:	{
 					if (myfd)
 						(void)fclose(fp);
 					free(record);
-					return (iret);
+					return iret;
 				}
 				if (iret == 1)
 					tc_not_resolved = 1;
@@ -479,7 +479,7 @@ tc_exp:	{
 						(void)fclose(fp);
 					free(ibuf);
 					errno = ENOMEM;
-					return (-2);
+					return -2;
 				}
 				record = nrecord;
 				r_end = record + newsize;
@@ -518,14 +518,14 @@ tc_exp:	{
 		if ((nrecord = realloc(record, rp - record)) == NULL) {
 			free(record);
 			errno = ENOMEM;
-			return (-2);
+			return -2;
 		}
 		record = nrecord;
 	}
 	*cap = record;
 	if (tc_not_resolved)
-		return (1);
-	return (0);
+		return 1;
+	return 0;
 }
 
 #ifdef BSDDB
@@ -541,9 +541,9 @@ cdbget(DB *capdbp, char **bp, const char *name)
 		/* Get the reference. */
 		switch(capdbp->get(capdbp, &key, &data, 0)) {
 		case -1:
-			return (-2);
+			return -2;
 		case 1:
-			return (-1);
+			return -1;
 		}
 
 		/* If not an index to another record, leave. */
@@ -555,7 +555,7 @@ cdbget(DB *capdbp, char **bp, const char *name)
 	}
 
 	*bp = (char *)data.data + 1;
-	return (((char *)(data.data))[0] == TCERR ? 1 : 0);
+	return ((char *)(data.data))[0] == TCERR ? 1 : 0;
 }
 #endif
 
@@ -570,7 +570,7 @@ cgetmatch(char *buf, const char *name)
 	const char *np;
 
 	if (*name == '\0')
-		return (-1);
+		return -1;
 	/*
 	 * Start search at beginning of record.
 	 */
@@ -583,7 +583,7 @@ cgetmatch(char *buf, const char *name)
 		for (;;)
 			if (*np == '\0') {
 				if (*bp == '|' || *bp == ':' || *bp == '\0')
-					return (0);
+					return 0;
 				else
 					break;
 			} else
@@ -596,7 +596,7 @@ cgetmatch(char *buf, const char *name)
 		bp--;	/* a '|' or ':' may have stopped the match */
 		for (;;)
 			if (*bp == '\0' || *bp == ':')
-				return (-1);	/* match failed totally */
+				return -1;	/* match failed totally */
 			else
 				if (*bp++ == '|')
 					break;	/* found next name */
@@ -626,14 +626,14 @@ cgetstr(char *buf, const char *cap, char **str)
 	 */
 	bp = cgetcap(buf, cap, '=');
 	if (bp == NULL)
-		return (-1);
+		return -1;
 
 	/*
 	 * Conversion / storage allocation loop ...  Allocate memory in
 	 * chunks SFRAG in size.
 	 */
 	if ((mem = malloc(SFRAG)) == NULL)
-		return (-2);	/* couldn't even allocate the first fragment */
+		return -2;	/* couldn't even allocate the first fragment */
 	m_room = SFRAG;
 	mp = mem;
 
@@ -707,7 +707,7 @@ cgetstr(char *buf, const char *cap, char **str)
 
 			if ((nmem = realloc(mem, size + SFRAG)) == NULL) {
 				free(mem);
-				return (-2);
+				return -2;
 			}
 			mem = nmem;
 			m_room = SFRAG;
@@ -726,12 +726,12 @@ cgetstr(char *buf, const char *cap, char **str)
 
 		if ((nmem = realloc(mem, mp - mem)) == NULL) {
 			free(mem);
-			return (-2);
+			return -2;
 		}
 		mem = nmem;
 	}
 	*str = mem;
-	return (len);
+	return len;
 }
 
 /*
@@ -757,14 +757,14 @@ cgetustr(char *buf, const char *cap, char **str)
 	 * Find string capability cap
 	 */
 	if ((bp = cgetcap(buf, cap, '=')) == NULL)
-		return (-1);
+		return -1;
 
 	/*
 	 * Conversion / storage allocation loop ...  Allocate memory in
 	 * chunks SFRAG in size.
 	 */
 	if ((mem = malloc(SFRAG)) == NULL)
-		return (-2);	/* couldn't even allocate the first fragment */
+		return -2;	/* couldn't even allocate the first fragment */
 	m_room = SFRAG;
 	mp = mem;
 
@@ -788,7 +788,7 @@ cgetustr(char *buf, const char *cap, char **str)
 
 			if ((nmem = realloc(mem, size + SFRAG)) == NULL) {
 				free(mem);
-				return (-2);
+				return -2;
 			}
 			mem = nmem;
 			m_room = SFRAG;
@@ -807,12 +807,12 @@ cgetustr(char *buf, const char *cap, char **str)
 
 		if ((nmem = realloc(mem, mp - mem)) == NULL) {
 			free(mem);
-			return (-2);
+			return -2;
 		}
 		mem = nmem;
 	}
 	*str = mem;
-	return (len);
+	return len;
 }
 
 /*
@@ -832,5 +832,5 @@ nfcmp(const char *nf, char *rec)
 	ret = strcmp(nf, rec);
 	*(cp + 1) = tmp;
 
-	return (ret);
+	return ret;
 }

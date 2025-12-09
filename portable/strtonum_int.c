@@ -65,5 +65,5 @@ strtonum(const char *numstr, long long minval, long long maxval,
 	if (error)
 		ll = 0;
 
-	return (ll);
+	return ll;
 }

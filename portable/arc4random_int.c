@@ -90,10 +90,10 @@ _rs_allocate(struct _rs **rsp, struct _rsx **rsxp)
 
 	if ((p = mmap(NULL, sizeof(*p), PROT_READ|PROT_WRITE,
 	    MAP_ANON|MAP_PRIVATE, -1, 0)) == MAP_FAILED)
-		return (-1);
+		return -1;
 	if (minherit(p, sizeof(*p), MAP_INHERIT_ZERO) == -1) {
 		munmap(p, sizeof(*p));
-		return (-1);
+		return -1;
 	}
 
 	*rsp = &p->rs;
@@ -106,12 +106,12 @@ _rs_allocate(struct _rs **rsp, struct _rsx **rsxp)
 
 	if ((p.rs = mmap(NULL, sizeof(struct _rs), PROT_READ|PROT_WRITE,
 	    MAP_ANON|MAP_PRIVATE, -1, 0)) == MAP_FAILED)
-		return (-1);
+		return -1;
 
 	if ((p.rsx = mmap(NULL, sizeof(struct _rsx), PROT_READ|PROT_WRITE,
 	    MAP_ANON|MAP_PRIVATE, -1, 0)) == MAP_FAILED) {
 		munmap(p.rs, sizeof(struct _rs));
-		return (-1);
+		return -1;
 	}
 
 	*rsp = p.rs;
@@ -119,7 +119,7 @@ _rs_allocate(struct _rs **rsp, struct _rsx **rsxp)
 
 	pthread_atfork(NULL, NULL, _rs_forkhandler);
 #endif
-	return (0);
+	return 0;
 }
 
 static inline void

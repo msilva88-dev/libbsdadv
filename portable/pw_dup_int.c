@@ -63,7 +63,7 @@ pw_dup(const struct passwd *pw)
 	PW_SIZE(pw_shell, ssize);
 
 	if ((cp = malloc(total)) == NULL)
-		return (NULL);
+		return NULL;
 	newpw = (struct passwd *)cp;
 
 	/*
@@ -80,5 +80,5 @@ pw_dup(const struct passwd *pw)
 	PW_COPY(pw_dir, dsize);
 	PW_COPY(pw_shell, ssize);
 
-	return (newpw);
+	return newpw;
 }
