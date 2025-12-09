@@ -531,10 +531,12 @@ _ng_makekey(const char *s1, const char *s2, size_t len)
 	char *buf = malloc(len);
 	int ret;
 
+	if (len < 3 || len > SSIZE_MAX) return NULL;
+
 	if (buf == NULL)
 		return NULL;
 	ret = snprintf(buf, len, "%s.%s", _NG_STAR(s1), _NG_STAR(s2));
-	if (ret < 0 || ret >= len) {
+	if (ret < 0 || ret >= (ssize_t)len) {
 		free(buf);
 		return NULL;
 	}
