@@ -35,7 +35,6 @@
 
 /* getcap internal from OpenBSD 7.0 source code: lib/libc/gen/getcap.c */
 
-#include <sys/types.h>
 #include <ctype.h>
 #ifdef BSDDB
 #include <bsddb.h>
@@ -66,7 +65,7 @@ static int	 gottoprec;	/* Flag indicating retrieval of toprecord */
 static int	cdbget(DB *, char **, const char *);
 #endif
 static int	cgetmatch(char *, const char *);
-static int 	getent(char **, u_int *, char **, FILE *, const char *, int, char *);
+static int 	getent(char **, unsigned int *, char **, FILE *, const char *, int, char *);
 static int	nfcmp(const char *, char *);
 
 #ifdef BSDDB
@@ -141,7 +140,7 @@ DEF_WEAK(cgetent);
 int
 cgetent(char **buf, char **db_array, const char *name)
 {
-	u_int dummy;
+	unsigned int dummy;
 
 	return (getent(buf, &dummy, db_array, NULL, name, 0, NULL));
 }
@@ -165,7 +164,7 @@ cgetent(char **buf, char **db_array, const char *name)
  *	  MAX_RECURSION.
  */
 static int
-getent(char **cap, u_int *len, char **db_array, FILE *fp,
+getent(char **cap, unsigned int *len, char **db_array, FILE *fp,
 	const char *name, int depth, char *nfield)
 {
 #ifdef BSDDB
@@ -383,7 +382,7 @@ getent(char **cap, u_int *len, char **db_array, FILE *fp,
 	 */
 tc_exp:	{
 		char *s;
-		u_int ilen;
+		unsigned int ilen;
 		int diff, iret, tclen;
 		char *ibuf, *icap, *scan, *tc, *tcstart, *tcend;
 
@@ -464,7 +463,7 @@ tc_exp:	{
 			 */
 			diff = ilen - tclen;
 			if (diff >= r_end - rp) {
-				u_int pos, tcpos, tcposend;
+				unsigned int pos, tcpos, tcposend;
 				size_t newsize;
 				char *nrecord;
 
@@ -616,7 +615,7 @@ DEF_WEAK(cgetstr);
 int
 cgetstr(char *buf, const char *cap, char **str)
 {
-	u_int m_room;
+	unsigned int m_room;
 	char *bp, *mp;
 	int len;
 	char *mem;
@@ -748,7 +747,7 @@ DEF_WEAK(cgetustr);
 int
 cgetustr(char *buf, const char *cap, char **str)
 {
-	u_int m_room;
+	unsigned int m_room;
 	char *bp, *mp;
 	int len;
 	char *mem;

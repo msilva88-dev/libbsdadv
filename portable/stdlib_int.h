@@ -16,6 +16,7 @@
 #ifndef _LIBBSD4_PORTABLE_STDLIB_INT_H
 #define _LIBBSD4_PORTABLE_STDLIB_INT_H
 
+#include <stdint.h>
 #include <stdlib.h>
 #include "../features.h"
 

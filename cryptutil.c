@@ -19,7 +19,6 @@
 
 /* cryptutil from OpenBSD 7.0 source code: lib/libc/crypt/cryptutil.c */
 
-#include <sys/types.h>
 #include <string.h>
 #include <errno.h>
 #include "login_cap.h"

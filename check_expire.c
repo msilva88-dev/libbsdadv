@@ -35,7 +35,6 @@
 
 /* check_expire from OpenBSD 7.0 source code: lib/libutil/check_expire.c */
 
-#include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>

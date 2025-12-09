@@ -42,6 +42,7 @@
 extern "C" {
 #endif
 
+#include <sys/types.h>
 #include <stdarg.h>
 
 typedef struct auth_session_t auth_session_t;

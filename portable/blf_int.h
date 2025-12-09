@@ -42,20 +42,21 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
 #include "../features.h"
 
 #define BLF_N 16
 
 typedef struct BlowfishContext {
-	u_int32_t S[4][256];	/* S-Boxes */
-	u_int32_t P[BLF_N + 2];	/* Subkeys */
+	uint32_t S[4][256];	/* S-Boxes */
+	uint32_t P[BLF_N + 2];	/* Subkeys */
 } blf_ctx;
 
-void blf_enc(blf_ctx *, u_int32_t *, u_int16_t) HIDDEN;
-u_int32_t Blowfish_stream2word(const u_int8_t *, u_int16_t , u_int16_t *) HIDDEN;
-void Blowfish_expand0state(blf_ctx *, const u_int8_t *, u_int16_t) HIDDEN;
-void Blowfish_expandstate(blf_ctx *, const u_int8_t *, u_int16_t,
-	const u_int8_t *, u_int16_t) HIDDEN;
+void blf_enc(blf_ctx *, uint32_t *, uint16_t) HIDDEN;
+uint32_t Blowfish_stream2word(const uint8_t *, uint16_t , uint16_t *) HIDDEN;
+void Blowfish_expand0state(blf_ctx *, const uint8_t *, uint16_t) HIDDEN;
+void Blowfish_expandstate(blf_ctx *, const uint8_t *, uint16_t,
+	const uint8_t *, uint16_t) HIDDEN;
 void Blowfish_initstate(blf_ctx *) HIDDEN;
 
 #ifdef __cplusplus

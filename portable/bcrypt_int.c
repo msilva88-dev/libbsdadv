@@ -35,11 +35,9 @@
  *
  */
 
-#include <sys/types.h>
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <time.h>
 #ifdef BLF
 #include "../blf.h"
@@ -63,8 +61,8 @@
 #define	BCRYPT_SALTSPACE	(7 + (BCRYPT_MAXSALT * 4 + 2) / 3 + 1)
 #define	BCRYPT_HASHSPACE	61
 
-static int encode_base64(char *, const u_int8_t *, size_t);
-static int decode_base64(u_int8_t *, size_t, const char *);
+static int encode_base64(char *, const uint8_t *, size_t);
+static int decode_base64(uint8_t *, size_t, const char *);
 
 /*
  * Generates a salt for this version of crypt.
@@ -100,13 +98,13 @@ bcrypt_hashpass(const char *key, const char *salt, char *encrypted,
     size_t encryptedlen)
 {
 	blf_ctx state;
-	u_int32_t rounds, i, k;
-	u_int16_t j;
+	uint32_t rounds, i, k;
+	uint16_t j;
 	size_t key_len;
-	u_int8_t salt_len, logr, minor;
-	u_int8_t ciphertext[4 * BCRYPT_WORDS] = "OrpheanBeholderScryDoubt";
-	u_int8_t csalt[BCRYPT_MAXSALT];
-	u_int32_t cdata[BCRYPT_WORDS];
+	uint8_t salt_len, logr, minor;
+	uint8_t ciphertext[4 * BCRYPT_WORDS] = "OrpheanBeholderScryDoubt";
+	uint8_t csalt[BCRYPT_MAXSALT];
+	uint32_t cdata[BCRYPT_WORDS];
 
 	if (encryptedlen < BCRYPT_HASHSPACE)
 		goto inval;
@@ -122,7 +120,7 @@ bcrypt_hashpass(const char *key, const char *salt, char *encrypted,
 	/* Check for minor versions */
 	switch ((minor = salt[1])) {
 	case 'a':
-		key_len = (u_int8_t)(strlen(key) + 1);
+		key_len = (uint8_t)(strlen(key) + 1);
 		break;
 	case 'b':
 		/* strlen() returns a size_t, but the function calls
@@ -166,9 +164,9 @@ bcrypt_hashpass(const char *key, const char *salt, char *encrypted,
 	/* Setting up S-Boxes and Subkeys */
 	Blowfish_initstate(&state);
 	Blowfish_expandstate(&state, csalt, salt_len,
-	    (u_int8_t *) key, key_len);
+	    (uint8_t *) key, key_len);
 	for (k = 0; k < rounds; k++) {
-		Blowfish_expand0state(&state, (u_int8_t *) key, key_len);
+		Blowfish_expand0state(&state, (uint8_t *) key, key_len);
 		Blowfish_expand0state(&state, csalt, salt_len);
 	}
 
@@ -246,10 +244,10 @@ bcrypt_checkpass(const char *pass, const char *goodhash)
 /*
  * internal utilities
  */
-static const u_int8_t Base64Code[] =
+static const uint8_t Base64Code[] =
 "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-static const u_int8_t index_64[128] = {
+static const uint8_t index_64[128] = {
 	255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
 	255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
 	255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
@@ -270,11 +268,11 @@ static const u_int8_t index_64[128] = {
  * read buflen (after decoding) bytes of data from b64data
  */
 static int
-decode_base64(u_int8_t *buffer, size_t len, const char *b64data)
+decode_base64(uint8_t *buffer, size_t len, const char *b64data)
 {
-	u_int8_t *bp = buffer;
-	const u_int8_t *p = (const u_int8_t *)b64data;
-	u_int8_t c1, c2, c3, c4;
+	uint8_t *bp = buffer;
+	const uint8_t *p = (const uint8_t *)b64data;
+	uint8_t c1, c2, c3, c4;
 
 	while (bp < buffer + len) {
 		c1 = CHAR64(*p);
@@ -313,11 +311,11 @@ decode_base64(u_int8_t *buffer, size_t len, const char *b64data)
  * This works without = padding.
  */
 static int
-encode_base64(char *b64buffer, const u_int8_t *data, size_t len)
+encode_base64(char *b64buffer, const uint8_t *data, size_t len)
 {
-	u_int8_t *bp = (u_int8_t *)b64buffer;
-	const u_int8_t *p = data;
-	u_int8_t c1, c2;
+	uint8_t *bp = (uint8_t *)b64buffer;
+	const uint8_t *p = data;
+	uint8_t c1, c2;
 
 	while (p < data + len) {
 		c1 = *p++;

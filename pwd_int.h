@@ -42,6 +42,7 @@
 #ifndef _LIBBSD4_PWD_INT_H
 #define _LIBBSD4_PWD_INT_H
 
+#include <sys/types.h>
 #include "features.h"
 
 #ifdef MUSL_WITH_BSD

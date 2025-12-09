@@ -33,7 +33,6 @@
 /* passwd internal from OpenBSD 7.0 source code: lib/libutil/passwd.c */
 
 #define _GNU_SOURCE
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -216,14 +215,14 @@ pw_write_entry(FILE *to, const struct passwd *pw)
 		strncpy(gidstr, "-1", sizeof(gidstr) - 1);
 		gidstr[sizeof(gidstr) - 1] = '\0';
 	} else
-		snprintf(gidstr, sizeof(gidstr), "%u", (u_int)pw->pw_gid);
+		snprintf(gidstr, sizeof(gidstr), "%u", (unsigned int)pw->pw_gid);
 
 	if (pw->pw_uid == (uid_t)-1) {
 		//strlcpy(uidstr, "-1", sizeof(uidstr));
 		strncpy(uidstr, "-1", sizeof(uidstr) - 1);
 		uidstr[sizeof(uidstr) - 1] = '\0';
 	} else
-		snprintf(uidstr, sizeof(uidstr), "%u", (u_int)pw->pw_uid);
+		snprintf(uidstr, sizeof(uidstr), "%u", (unsigned int)pw->pw_uid);
 
 	return fprintf(to, "%s:%s:%s:%s:%s:%lld:%lld:%s:%s:%s\n",
 	    pw->pw_name, pw->pw_passwd, uidstr, gidstr, pw->pw_class,

@@ -34,7 +34,6 @@
 
 /* getnetgrent from OpenBSD 7.0 source code: lib/libc/gen/getnetgrent.c */
 
-#include <sys/types.h>
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>

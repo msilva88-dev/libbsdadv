@@ -42,6 +42,8 @@
 extern "C" {
 #endif
 
+#include <sys/types.h>
+
 #define	LOGIN_DEFCLASS		"default"
 #define	LOGIN_DEFSTYLE		"passwd"
 #define	LOGIN_DEFSERVICE	"login"

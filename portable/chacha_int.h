@@ -6,27 +6,24 @@ Public domain.
 
 /* chacha internal header from OpenBSD 7.0 source code: lib/libc/crypt/chacha_private.h */
 
-typedef unsigned char u8;
-typedef unsigned int u32;
-
 typedef struct
 {
-	u32 input[16]; /* could be compressed */
+	uint32_t input[16]; /* could be compressed */
 } chacha_ctx;
 
 #define U8C(v) (v##U)
 #define U32C(v) (v##U)
 
-#define U8V(v) ((u8)(v) & U8C(0xFF))
-#define U32V(v) ((u32)(v) & U32C(0xFFFFFFFF))
+#define U8V(v) ((uint8_t)(v) & U8C(0xFF))
+#define U32V(v) ((uint32_t)(v) & U32C(0xFFFFFFFF))
 
 #define ROTL32(v, n) (U32V((v) << (n)) | ((v) >> (32 - (n))))
 
 #define U8TO32_LITTLE(p)	\
-	(((u32)((p)[0])) |	\
-	((u32)((p)[1]) << 8) |	\
-	((u32)((p)[2]) << 16) |	\
-	((u32)((p)[3]) << 24))
+	(((uint32_t)((p)[0])) |	\
+	((uint32_t)((p)[1]) << 8) |	\
+	((uint32_t)((p)[2]) << 16) |	\
+	((uint32_t)((p)[3]) << 24))
 
 #define U32TO8_LITTLE(p, v) do {		\
 	(p)[0] = U8V((v));			\
@@ -49,7 +46,7 @@ static const char sigma[16] = "expand 32-byte k";
 static const char tau[16] = "expand 16-byte k";
 
 static void
-chacha_keysetup(chacha_ctx *x, const u8 *k, u32 kbits, u32 ivbits)
+chacha_keysetup(chacha_ctx *x, const uint8_t *k, uint32_t kbits, uint32_t ivbits)
 {
 	const char *constants;
 
@@ -74,7 +71,7 @@ chacha_keysetup(chacha_ctx *x, const u8 *k, u32 kbits, u32 ivbits)
 }
 
 static void
-chacha_ivsetup(chacha_ctx *x, const u8 *iv)
+chacha_ivsetup(chacha_ctx *x, const uint8_t *iv)
 {
 	x->input[12] = 0;
 	x->input[13] = 0;
@@ -83,13 +80,13 @@ chacha_ivsetup(chacha_ctx *x, const u8 *iv)
 }
 
 static void
-chacha_encrypt_bytes(chacha_ctx *x, const u8 *m, u8 *c, u32 bytes)
+chacha_encrypt_bytes(chacha_ctx *x, const uint8_t *m, uint8_t *c, uint32_t bytes)
 {
-	u32 x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15;
-	u32 j0, j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12, j13, j14, j15;
-	u8 *ctarget = NULL;
-	u8 tmp[64];
-	u_int i;
+	uint32_t x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15;
+	uint32_t j0, j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12, j13, j14, j15;
+	uint8_t *ctarget = NULL;
+	uint8_t tmp[64];
+	unsigned int i;
 
 	if (!bytes) return;
 

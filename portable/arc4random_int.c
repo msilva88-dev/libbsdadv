@@ -28,14 +28,12 @@
  * ChaCha based random number generator for OpenBSD.
  */
 
-#include <sys/types.h>
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <pthread.h>
 #include <signal.h>
-#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #include "stdlib_int.h"
@@ -44,12 +42,6 @@
 #include "chacha_int.h"
 
 #define minimum(a, b) ((a) < (b) ? (a) : (b))
-
-#if defined(__GNUC__) || defined(_MSC_VER)
-#define inline __inline
-#else				/* __GNUC__ || _MSC_VER */
-#define inline
-#endif				/* !__GNUC__ && !_MSC_VER */
 
 #define KEYSZ	32
 #define IVSZ	8
@@ -69,7 +61,7 @@ static struct _rs {
 /* Maybe be preserved in fork children, if _rs_allocate() decides. */
 static struct _rsx {
 	chacha_ctx	rs_chacha;	/* chacha context for random keystream */
-	u_char		rs_buf[RSBUFSZ];	/* keystream blocks */
+	unsigned char		rs_buf[RSBUFSZ];	/* keystream blocks */
 } *rsx;
 
 static inline void
@@ -147,10 +139,10 @@ _rs_forkdetect(void)
 #endif
 }
 
-static inline void _rs_rekey(u_char *dat, size_t datlen);
+static inline void _rs_rekey(unsigned char *dat, size_t datlen);
 
 static inline void
-_rs_init(u_char *buf, size_t n)
+_rs_init(unsigned char *buf, size_t n)
 {
 	if (n < KEYSZ + IVSZ)
 		return;
@@ -167,7 +159,7 @@ _rs_init(u_char *buf, size_t n)
 static void
 _rs_stir(void)
 {
-	u_char rnd[KEYSZ + IVSZ];
+	unsigned char rnd[KEYSZ + IVSZ];
 
 	if (getentropy(rnd, sizeof rnd) == -1)
 		_getentropy_fail();
@@ -198,7 +190,7 @@ _rs_stir_if_needed(size_t len)
 }
 
 static inline void
-_rs_rekey(u_char *dat, size_t datlen)
+_rs_rekey(unsigned char *dat, size_t datlen)
 {
 #ifndef KEYSTREAM_ONLY
 	memset(rsx->rs_buf, 0, sizeof(rsx->rs_buf));
@@ -223,8 +215,8 @@ _rs_rekey(u_char *dat, size_t datlen)
 static inline void
 _rs_random_buf(void *_buf, size_t n)
 {
-	u_char *buf = (u_char *)_buf;
-	u_char *keystream;
+	unsigned char *buf = (unsigned char *)_buf;
+	unsigned char *keystream;
 	size_t m;
 
 	_rs_stir_if_needed(n);
