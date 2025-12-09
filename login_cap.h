@@ -53,7 +53,9 @@ extern "C" {
 #define	_PATH_AUTHPROG		"/usr/libexec/auth/login_"
 
 #define	LOGIN_SETGROUP		0x0001	/* Set group */
+#if defined(__HyperbolaBSD__) || defined(__OpenBSD__)
 #define	LOGIN_SETLOGIN		0x0002	/* Set login */
+#endif
 #define	LOGIN_SETPATH		0x0004	/* Set path */
 #define	LOGIN_SETPRIORITY	0x0008	/* Set priority */
 #define	LOGIN_SETRESOURCES	0x0010	/* Set resource limits */

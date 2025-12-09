@@ -589,7 +589,11 @@ setusercontext(login_cap_t *lc, struct passwd *pwd, uid_t uid, unsigned int flag
 	 * the group or the login.  We could complain about it.
 	 */
 	if (pwd == NULL)
+#if defined(__HyperbolaBSD__) || defined(__OpenBSD__)
 		flags &= ~(LOGIN_SETGROUP|LOGIN_SETLOGIN);
+#elif defined(__linux__)
+		flags &= ~(LOGIN_SETGROUP);
+#endif
 
 	/*
 	 * Verify that we haven't been given invalid values.
@@ -644,6 +648,8 @@ setusercontext(login_cap_t *lc, struct passwd *pwd, uid_t uid, unsigned int flag
 		}
 	}
 
+
+#if defined(__HyperbolaBSD__) || defined(__OpenBSD__)
 	if (flags & LOGIN_SETLOGIN)
 		if (setlogin(pwd->pw_name) == -1) {
 			syslog(LOG_ERR, "setlogin(%s) failure: %s",
@@ -651,6 +657,7 @@ setusercontext(login_cap_t *lc, struct passwd *pwd, uid_t uid, unsigned int flag
 			login_close(flc);
 			return (-1);
 		}
+#endif
 
 	if (flags & LOGIN_SETUSER) {
 		if (setresuid(uid, uid, uid) == -1) {
