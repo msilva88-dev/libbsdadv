@@ -17,7 +17,8 @@ AR ?= $(AR_CMD)
 ARFLAGS ?= rcs
 BUILDDIR ?= build
 CARCH ?= $(CARCH_CMD)
-CHOST ?= $(CHOST_CMD)
+CBUILD ?= $(CBUILD_CMD)
+CHOST ?= $(CBUILD_CMD)
 CTHREADS ?= $(CTHREADS_CMD)
 CPPFLAGS ?= $(CPPFLAGS_CMD)
 CC ?= $(CC_CMD)
@@ -38,7 +39,7 @@ LIBDIR ?= $(PREFIX)lib/
 MARCH ?= $(MARCH_CMD)
 PREFIX ?= $(DESTDIR)
 USROWN ?= root
-USE_MUSL_WITH_BSD ?= true
+USE_LIBC_WITH_BSDLIB ?= $(USE_LIBC_WITH_BSDLIB_CMD)
 
 # Number of CPU threads for parallel compilation
 CTHREADS_CMD != sh -c '\
@@ -50,8 +51,11 @@ CARCH_CMD != sh -c 'uname -m 2>/dev/null || printf "%s" "x86_64"' 2>/dev/null
 COS_CMD != sh -c '\
 uname -s 2>/dev/null || printf "%s" "Linux" \
 ' 2>/dev/null
-CHOST_CMD != sh -c '\
+CBUILD_CMD != sh -c '\
 case "$(COS_CMD)" in \
+    OpenBSD) \
+        printf "%s-pc-%s" "$(CARCH)" "openbsd" \
+        ;; \
     HyperbolaBSD) \
         printf "%s-pc-%s" "$(CARCH)" "hyperbolabsd" \
         ;; \
@@ -95,8 +99,18 @@ esac \
 ' 2>/dev/null
 
 # Target libc flags
+USE_LIBC_WITH_BSDLIB_CMD != sh -c '\
+case "$(CHOST)" in \
+    *-hyperbolabsd*|*-openbsd*) \
+        printf "%s" "true" \
+        ;; \
+    *-linux-gnu*|*-linux-musl*|*) \
+        printf "%s" "false" \
+        ;; \
+esac \
+' 2>/dev/null
 BUILD_PORTABLE_CMD != sh -c '\
-case "$(USE_MUSL_WITH_BSD)" in \
+case "$(USE_LIBC_WITH_BSDLIB)" in \
     true) \
         printf "%s" "false" \
         ;; \
