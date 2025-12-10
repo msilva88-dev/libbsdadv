@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: ISC */
+
 /*
  * Copyright (c) 2004 Ted Unangst and Todd Miller
  * All rights reserved.

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-4-Clause */
+
 /*
  * Copyright (c) 1997 Christos Zoulas.  All rights reserved.
  *

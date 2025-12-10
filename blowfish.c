@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-4-Clause */
+
 /*
  * Blowfish block cipher for OpenBSD
  * Copyright 1997 Niels Provos <provos@physnet.uni-hamburg.de>

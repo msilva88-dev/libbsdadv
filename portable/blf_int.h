@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-4-Clause */
+
 /*
  * Blowfish - a fast block cipher designed by Bruce Schneier
  *

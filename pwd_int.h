@@ -1,16 +1,18 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 /*
  * Copyright (c) 1989, 1993
  *      The Regents of the University of California.  All rights reserved.
  * (c) UNIX System Laboratories, Inc.
- *
- * Modifications to support HyperbolaBSD:
- * Copyright (c) 2025 Hyperbola Project
  *
  * All or some portions of this file are derived from material licensed
  * to the University of California by American Telephone and Telegraph
  * Co. or Unix System Laboratories, Inc. and are reproduced herein with
  * the permission of UNIX System Laboratories, Inc.
  * Portions Copyright(C) 1995, 1996, Jason Downs.  All rights reserved.
+ *
+ * Modifications to support HyperbolaBSD:
+ * Copyright (c) 2025 Hyperbola Project
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

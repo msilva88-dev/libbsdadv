@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: ISC */
+
 /*
  * Copyright (c) 2010 Damien Miller.  All rights reserved.
  *

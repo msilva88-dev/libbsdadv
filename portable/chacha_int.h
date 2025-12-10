@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: LicenseRef-PublicDomain */
+
 /*
 chacha-merged.c version 20080118
 D. J. Bernstein

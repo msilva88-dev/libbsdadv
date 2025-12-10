@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-4-Clause */
+
 /*
  * Copyright (c) 1995,1997 Berkeley Software Design, Inc. All rights reserved.
  *

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: ISC */
+
 /*
  * Copyright (c) 2014 Ted Unangst <tedu@openbsd.org>
  * Copyright (c) 1997 Niels Provos <provos@umich.edu>

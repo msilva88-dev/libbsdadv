@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: ISC AND BSD-4-Clause */
+
 /*
  * Copyright (c) 2000-2002,2004 Todd C. Miller <millert@openbsd.org>
  *
