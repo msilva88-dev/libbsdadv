@@ -38,6 +38,13 @@ ENABLE_YP ?= false
 FILEGRP ?= root
 FILEOWN ?= root
 FILEPERM ?= 0644
+INCLUDEDIR ?= $(PREFIX)/include
+INCDGRP ?= $(DIRGRP)
+INCDOWN ?= $(DIROWN)
+INCDPERM ?= $(DIRPERM)
+INCFGRP ?= $(FILEGRP)
+INCFOWN ?= $(FILEOWN)
+INCFPERM ?= $(FILEPERM)
 LD ?= $(LD_CMD)
 LDHSTYLE ?= both
 LDHSTYLE_LEG ?= gnu
@@ -85,8 +92,8 @@ case "$(COS_CMD)" in \
         printf "%s-pc-%s" "$(CARCH)" "hyperbolabsd" \
         ;; \
     *Linux|*) \
-        _GLIBC=$(ldd --version 2>&1 | head -n 1 | cut -d"(" -f2 | cut -d")" -f1) \
-        if [ "${_GLIBC}" = "GNU libc" ]; then \
+        _G=$(ldd --version 2>&1 | head -n 1 | cut -d"(" -f2 | cut -d")" -f1) \
+        if [ "${_G}" = "GNU libc" ]; then \
             printf "%s-pc-%s" "$(CARCH)" "linux-gnu"; \
         else \
             printf "%s-pc-%s" "$(CARCH)" "linux-musl"; \
@@ -442,6 +449,19 @@ LIBBSD4_OBJS += $(BUILDDIR)/check_expire.o $(BUILDDIR)/cryptutil.o
 LIBBSD4_OBJS += $(BUILDDIR)/fparseln.o $(BUILDDIR)/getnetgrent.o
 LIBBSD4_OBJS += $(BUILDDIR)/login_cap.o
 
+LIBBSD4_BLF_HDR_CMD != sh -c '\
+case "$(ENABLE_BLF)" in \
+    true) \
+        printf "%s" "blf.h" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSD4_HDRS ::= $(LIBBSD4_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
+LIBBSD4_HDRS += unistd_bsd4.h util_bsd4.h
+
 LIBBSD4_BLF_MAN_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
@@ -463,34 +483,83 @@ all: $(LIBS)
 libbsd4_dynamic: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
 	if [ "$(BUILD_PORTABLE)" = "true" ]; then \
 	    $(CC) $(LDFLAGS) $(DFT_LIBFLAGS) $(DFT_SHAREDLDFLAGS) \
-	      -o $(BUILDDIR)/libbsd4.so $^; \
+	      -o "$(BUILDDIR)/libbsd4.so" $^; \
 	else \
 	    $(CC) $(LDFLAGS) $(DFT_LIBFLAGS) $(DFT_SHAREDLDFLAGS) \
-	      -o $(BUILDDIR)/libbsd4.so $(LIBBSD4_OBJS) $(COMMON_OBJS); \
+	      -o "$(BUILDDIR)/libbsd4.so" \
+              $(LIBBSD4_OBJS) $(COMMON_OBJS); \
 	fi
 
 libbsd4_static: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
 	if [ "$(BUILD_PORTABLE)" = "true" ]; then \
-		$(AR) $(ARFLAGS) $(BUILDDIR)/libbsd4.a $^; \
+	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsd4.a" $^; \
 	else \
-		$(AR) $(ARFLAGS) $(BUILDDIR)/libbsd4.a $(LIBBSD4_OBJS) $(COMMON_OBJS); \
+	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsd4.a" \
+              $(LIBBSD4_OBJS) $(COMMON_OBJS); \
 	fi
 
 $(BUILDDIR):
-	mkdir -p $(BUILDDIR)
+	mkdir -p "$(BUILDDIR)"
 
 $(BUILDDIR)/%.o: %.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $< -o $@
 
 $(BUILDDIR)/portable:
-	mkdir -p $(BUILDDIR)/portable
+	mkdir -p "$(BUILDDIR)/portable"
 
 $(BUILDDIR)/portable/%.o: portable/%.c | $(BUILDDIR)/portable
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $< -o $@
 
 ## Install
 
-install:
+install: install-hdr install-lib install-man
+
+install-hdr: $(LIBBSD4_HDRS)
+	([ -d "$(DESTDIR)/$(PREFIX)" ] || [ "$(DESTDIR)/$(PREFIX)" = "/" ]) \
+	  || mkdir -pm "$(PFIXPERM)" "$(DESTDIR)/$(PREFIX)"
+	( \
+	    [ -d "$(DESTDIR)/$(INCLUDEDIR)" ] \
+	    || [ "$(DESTDIR)/$(INCLUDEDIR)" = "/" ] \
+	) \
+	  || mkdir -pm "$(INCDPERM)" "$(DESTDIR)/$(INCLUDEDIR)"
+
+	OGDIR="$(DESTDIR)/$(PREFIX)"; \
+	OWNGRP=$$(ls -ld "$${OGDIR}" 2>/dev/null | awk '{print $$3, $$4}'); \
+	set -- "$${OWNGRP}"; \
+	[ "$$1" = "$(PFIXOWN)" ] \
+	  || chown "$(PFIXOWN)" "$(DESTDIR)/$(PREFIX)"; \
+	[ "$$2" = "$(PFIXGRP)" ] \
+	  || chgrp "$(PFIXGRP)" "$(DESTDIR)/$(PREFIX)"
+
+	if [ "$(DIRPGRP)" = "true" ]; then \
+	    LSPERMS="ls -ld \"$(DESTDIR)/$(PREFIX)\" 2>/dev/null"; \
+	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(PREFIX)"; \
+	fi
+
+	OGDIR="$(DESTDIR)/$(INCLUDEDIR)"; \
+	OWNGRP=$$(ls -ld "$${OGDIR}" 2>/dev/null | awk '{print $$3, $$4}'); \
+	set -- "$${OWNGRP}"; \
+	[ "$$1" = "$(INCDOWN)" ] \
+	  || chown "$(INCDOWN)" "$(DESTDIR)/$(INCLUDEDIR)"; \
+	[ "$$2" = "$(INCDGRP)" ] \
+	  || chgrp "$(INCDGRP)" "$(DESTDIR)/$(INCLUDEDIR)"
+
+	if [ "$(DIRPGRP)" = "true" ]; then \
+	    LSPERMS="ls -ld \"$(DESTDIR)/$(SHAREDIR)\" 2>/dev/null"; \
+	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(SHAREDIR)"; \
+	fi
+
+	cp -p $(LIBBSD4_HDRS) "$(DESTDIR)/$(INCLUDEDIR)"
+	for FILE in $(LIBBSD4_HDRS); do \
+	    chmod "$(INCFPERM)" \
+	      "$(DESTDIR)/$(INCLUDEDIR)/$${FILE}"; \
+	    chown "$(INCFOWN):$(INCFGRP)" \
+	      "$(DESTDIR)/$(INCLUDEDIR)/$${FILE}"; \
+	done
+
+install-lib:
 	([ -d "$(DESTDIR)/$(PREFIX)" ] || [ "$(DESTDIR)/$(PREFIX)" = "/" ]) \
 	  || mkdir -pm "$(PFIXPERM)" "$(DESTDIR)/$(PREFIX)"
 	([ -d "$(DESTDIR)/$(LIBDIR)" ] || [ "$(DESTDIR)/$(LIBDIR)" = "/" ]) \
@@ -525,8 +594,12 @@ install:
 	fi
 
 	cp -p "$(BUILDDIR)/libbsd4."* "$(DESTDIR)/$(LIBDIR)"
-	chmod "$(LIBFPERM)" "$(DESTDIR)/$(LIBDIR)/"*
-	chown "$(LIBFOWN):$(LIBFGRP)" "$(DESTDIR)/$(LIBDIR)/"*
+	for FILE in $(ls "$(BUILDDIR)/libbsd4."* | xargs -n1 basename); do \
+	    chmod "$(LIBFPERM)" \
+	      "$(DESTDIR)/$(LIBDIR)/$${FILE}"; \
+	    chown "$(LIBFOWN):$(LIBFGRP)" \
+	      "$(DESTDIR)/$(LIBDIR)/$${FILE}"; \
+	done
 
 ## Install Manuals
 
@@ -599,13 +672,17 @@ install-man: $(LIBBSD4_MANS)
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(MANDIR)/man3"; \
 	fi
 
-	cp -p $^ "$(DESTDIR)/$(MANDIR)/man3"
-	chmod "$(MANFPERM)" "$(DESTDIR)/$(MANDIR)/man3/"*
-	chown "$(MANFOWN):$(MANFGRP)" "$(DESTDIR)/$(MANDIR)/man3/"*
+	cp -p $(LIBBSD4_MANS) "$(DESTDIR)/$(MANDIR)/man3"
+	for FILE in $(LIBBSD4_MANS); do \
+	    chmod "$(MANFPERM)" \
+	      "$(DESTDIR)/$(MANDIR)/man3/$${FILE}"; \
+	    chown "$(MANFOWN):$(MANFGRP)" \
+	      "$(DESTDIR)/$(MANDIR)/man3/$${FILE}"; \
+	done
 
 ## Clean
 
 clean:
-	rm -frv $(BUILDDIR)
+	rm -frv "$(BUILDDIR)"
 
-.PHONY: all clean install install-man $(LIBS)
+.PHONY: all clean install install-hdr install-lib install-man $(LIBS)
