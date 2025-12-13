@@ -50,11 +50,14 @@
 #include <string.h>
 #endif
 
-#if BLF
+#if defined(BLF)
 #include "features.h"
 #include "blf.h"
-#else
+#elif defined(PORTABLE)
 #include "portable/blf_int.h"
+#else
+#include "features.h"
+#include <blf.h>
 #endif
 
 /* Function for Feistel Networks */
