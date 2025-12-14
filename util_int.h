@@ -18,7 +18,7 @@
 #ifndef _LIBBSD4_UTIL_INT_H
 #define _LIBBSD4_UTIL_INT_H
 
-#ifdef MUSL_WITH_BSD
+#ifdef LIBC_WITH_BSD
 #include <util.h>
 #else
 int pw_abort(void) HIDDEN_A;

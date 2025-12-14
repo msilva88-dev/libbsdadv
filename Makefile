@@ -206,10 +206,17 @@ OPTFLAG_BSDDB_CMD != sh -c '\
 [ "$(ENABLE_BSDDB)" = "true" ] && printf "%s%s" "-D" "BSDDB"; \
 ' 2>/dev/null || true
 OPTFLAG_BSDDB := $(OPTFLAG_BSDDB_CMD)
-OPTFLAG_PORTABLE_CMD != sh -c '\
-[ "$(BUILD_PORTABLE)" = "true" ] && printf "%s%s" "-D" "PORTABLE"; \
-' 2>/dev/null || true
-OPTFLAG_PORTABLE := $(OPTFLAG_PORTABLE_CMD)
+OPTFLAG_LIBCBSD_CMD != sh -c '\
+case "$(USE_LIBC_WITH_BSDLIB)" in \
+    true) \
+        printf "%s%s" "-D" "LIBC_WITH_BSD" \
+        ;; \
+    false|*) \
+        printf "%s%s" "" "" \
+        ;; \
+esac \
+' 2>/dev/null
+OPTFLAG_LIBCBSD := $(OPTFLAG_LIBCBSD_CMD)
 OPTFLAG_YP_CMD != sh -c '\
 [ "$(ENABLE_YP)" = "true" ] && printf "%s%s" "-D" "YP"; \
 ' 2>/dev/null || true
@@ -497,25 +504,25 @@ $(BUILDDIR):
 $(BUILDDIR)/portable:
 	mkdir -p "$(BUILDDIR)/portable"
 $(BUILDDIR)/authenticate.o: authenticate.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/auth_subr.o: auth_subr.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/bcrypt_int.o: bcrypt_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/blowfish.o: blowfish.c
-	$(CC) $(CFLAGS) $(OPTFLAG_BLF) $(OPTFLAG_PORTABLE) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_BLF) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/bcrypt_pbkdf.o: bcrypt_pbkdf.c
-	$(CC) $(CFLAGS) $(OPTFLAG_PORTABLE) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/check_expire.o: check_expire.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/cryptutil.o: cryptutil.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/fparseln.o: fparseln.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/getnetgrent.o: getnetgrent.c
 	$(CC) $(CFLAGS) $(OPTFLAG_BSDDB) $(OPTFLAG_YP) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/login_cap.o: login_cap.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/portable/arc4random_int.o: portable/arc4random_int.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/portable/bcrypt_int_ptb.o: portable/bcrypt_int_ptb.c

@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "blf.h"
-#ifdef PORTABLE
+#ifndef LIBC_WITH_BSD
 #include "portable/stdlib_int.h"
 #include "portable/sha2_int.h"
 #endif

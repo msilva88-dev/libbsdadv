@@ -46,18 +46,18 @@
  */
 
 #if defined(TEST) && defined(BLF)
-#include <stdio.h>		/* used for debugging */
+#include <stdio.h>
 #include <string.h>
 #endif
 
 #if defined(BLF)
 #include "features.h"
 #include "blf.h"
-#elif defined(PORTABLE)
-#include "portable/blf_int.h"
-#else
+#elif defined(LIBC_WITH_BSD)
 #include "features.h"
 #include <blf.h>
+#else
+#include "portable/blf_int.h"
 #endif
 
 /* Function for Feistel Networks */

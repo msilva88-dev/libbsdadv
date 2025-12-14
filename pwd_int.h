@@ -47,7 +47,7 @@
 #include <sys/types.h>
 #include "features.h"
 
-#ifdef MUSL_WITH_BSD
+#ifdef LIBC_WITH_BSD
 #include <pwd.h>
 #else
 
