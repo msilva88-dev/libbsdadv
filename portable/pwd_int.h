@@ -47,10 +47,6 @@
 #ifndef _LIBBSD4_PORTABLE_PWD_INT_H
 #define _LIBBSD4_PORTABLE_PWD_INT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "../pwd_int.h"
 
 #define __dead __attribute__((__noreturn__))
@@ -88,9 +84,5 @@ extern "C" {
 #endif
 
 void pw_error(const char *, int, int) HIDDEN_A;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

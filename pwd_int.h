@@ -51,10 +51,6 @@
 #include <pwd.h>
 #else
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 struct passwd {
 	char *pw_name;
 	char *pw_passwd; // linux/bsd
@@ -76,10 +72,6 @@ int getpwuid_r(uid_t, struct passwd *, char *, size_t, struct passwd **);
 int bcrypt_checkpass(const char *, const char *) HIDDEN_A;
 int bcrypt_newhash(const char *, int, char *, size_t) HIDDEN_A;
 struct passwd *pw_dup(const struct passwd *) HIDDEN_A;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

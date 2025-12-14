@@ -18,17 +18,9 @@
 #ifndef _LIBBSD4_BSD_AUTH_HIDDEN_INT_H
 #define _LIBBSD4_BSD_AUTH_HIDDEN_INT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "bsd_auth.h"
 #include "features.h"
 
 int _auth_validuser(const char *) HIDDEN_A;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -43,10 +43,6 @@
 #ifndef _LIBBSD4_PORTABLE_BLF_INT_H
 #define _LIBBSD4_PORTABLE_BLF_INT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdint.h>
 #include "../features.h"
 
@@ -63,9 +59,5 @@ void Blowfish_expand0state(blf_ctx *, const uint8_t *, uint16_t) HIDDEN_A;
 void Blowfish_expandstate(blf_ctx *, const uint8_t *, uint16_t,
 	const uint8_t *, uint16_t) HIDDEN_A;
 void Blowfish_initstate(blf_ctx *) HIDDEN_A;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
