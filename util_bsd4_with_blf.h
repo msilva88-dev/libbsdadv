@@ -58,9 +58,11 @@ extern "C" {
  */
 struct passwd;
 
+#ifdef _BSD_SOURCE
 int bcrypt_pbkdf(const char *, size_t, const uint8_t *, size_t, uint8_t *, size_t, unsigned int);
 char *fparseln(FILE *, size_t *, size_t *, const char[3], int);
 int login_check_expire(FILE *, struct passwd *, char *, int);
+#endif
 
 #ifdef __cplusplus
 }

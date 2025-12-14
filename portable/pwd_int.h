@@ -83,6 +83,8 @@
 #define _PATH_PWD_MKDB "/usr/sbin/pwd_mkdb"
 #endif
 
+#ifdef _BSD_SOURCE
 void pw_error(const char *, int, int) HIDDEN_A;
+#endif
 
 #endif

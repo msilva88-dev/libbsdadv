@@ -25,6 +25,10 @@
  * lib/libc/stdlib/strtonum.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <errno.h>
 #include <limits.h>
 #include "../stdlib_int.h"

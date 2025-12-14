@@ -65,10 +65,12 @@ struct netgroup {
 	struct netgroup	*ng_next;	/* thread */
 };
 
-void	setnetgrent(const char *);
-int	getnetgrent(const char **, const char **, const char **);
-void	endnetgrent(void);
-int	innetgr(const char *, const char *, const char *, const char *);
+#ifdef _BSD_SOURCE
+void setnetgrent(const char *);
+int getnetgrent(const char **, const char **, const char **);
+void endnetgrent(void);
+int innetgr(const char *, const char *, const char *, const char *);
+#endif
 
 #ifdef __cplusplus
 }

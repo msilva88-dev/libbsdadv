@@ -40,6 +40,10 @@
  * lib/libc/gen/authenticate.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <sys/stat.h>
 #include <ctype.h>
 #include <err.h>

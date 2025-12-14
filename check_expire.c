@@ -40,6 +40,10 @@
  * lib/libutil/check_expire.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>

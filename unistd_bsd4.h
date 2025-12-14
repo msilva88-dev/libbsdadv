@@ -24,8 +24,10 @@ extern "C" {
 
 #include <unistd.h>
 
+#ifdef _BSD_SOURCE
 int crypt_checkpass(const char *, const char *);
 int crypt_newhash(const char *, const char *, char *, size_t);
+#endif
 
 #ifdef __cplusplus
 }

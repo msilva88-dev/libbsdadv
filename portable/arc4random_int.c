@@ -39,6 +39,10 @@
  * ChaCha based random number generator for OpenBSD.
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <fcntl.h>

@@ -56,8 +56,10 @@ typedef struct _SHA2_CTX {
 	uint8_t buffer[SHA512_BLOCK_LENGTH];
 } SHA2_CTX;
 
+#ifdef _BSD_SOURCE
 void SHA512Init(SHA2_CTX *) HIDDEN_A;
 void SHA512Update(SHA2_CTX *, const uint8_t *, size_t) HIDDEN_A;
 void SHA512Final(uint8_t [SHA512_DIGEST_LENGTH], SHA2_CTX *) HIDDEN_A;
+#endif
 
 #endif

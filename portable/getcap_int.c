@@ -40,6 +40,10 @@
  * lib/libc/gen/getcap.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <ctype.h>
 #ifdef BSDDB
 #include <bsddb.h>

@@ -21,6 +21,10 @@
 
 /* cryptutil code from OpenBSD 7.0 source code: lib/libc/crypt/cryptutil.c */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <string.h>
 #include <errno.h>
 #include "login_cap.h"

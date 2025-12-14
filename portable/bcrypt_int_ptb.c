@@ -40,6 +40,10 @@
  *
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>

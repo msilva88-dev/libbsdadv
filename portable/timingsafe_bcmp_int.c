@@ -24,6 +24,10 @@
  * lib/libc/string/timingsafe_bcmp.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include "string_int.h"
 
 DEF_WEAK(timingsafe_bcmp);

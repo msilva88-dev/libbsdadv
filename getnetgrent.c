@@ -39,6 +39,10 @@
  * lib/libc/gen/getnetgrent.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>

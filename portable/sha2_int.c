@@ -38,6 +38,10 @@
  * lib/libc/hash/sha2.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <endian.h>
 #include <string.h>
 #include "sha2_int.h"

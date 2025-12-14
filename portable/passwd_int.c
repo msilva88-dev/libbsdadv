@@ -37,6 +37,10 @@
  * lib/libutil/passwd.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #define _GNU_SOURCE
 #include <sys/stat.h>
 #include <sys/time.h>

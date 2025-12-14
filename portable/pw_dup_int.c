@@ -28,6 +28,10 @@
  * lib/libc/gen/pw_dup.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

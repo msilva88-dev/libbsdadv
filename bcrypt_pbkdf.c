@@ -22,6 +22,10 @@
  * lib/libutil/bcrypt_pbkdf.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

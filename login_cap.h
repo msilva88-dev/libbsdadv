@@ -101,17 +101,19 @@ typedef struct login_cap {
 
 struct passwd;
 
+#ifdef _BSD_SOURCE
 login_cap_t *login_getclass(char *);
-void	 login_close(login_cap_t *);
-int	 login_getcapbool(login_cap_t *, char *, unsigned int);
-quad_t	 login_getcapnum(login_cap_t *, char *, quad_t, quad_t);
-quad_t	 login_getcapsize(login_cap_t *, char *, quad_t, quad_t);
-char	*login_getcapstr(login_cap_t *, char *, char *, char *);
-quad_t	 login_getcaptime(login_cap_t *, char *, quad_t, quad_t);
-char	*login_getstyle(login_cap_t *, char *, char *);
+void login_close(login_cap_t *);
+int login_getcapbool(login_cap_t *, char *, unsigned int);
+quad_t login_getcapnum(login_cap_t *, char *, quad_t, quad_t);
+quad_t login_getcapsize(login_cap_t *, char *, quad_t, quad_t);
+char *login_getcapstr(login_cap_t *, char *, char *, char *);
+quad_t login_getcaptime(login_cap_t *, char *, quad_t, quad_t);
+char *login_getstyle(login_cap_t *, char *, char *);
 
-int	setclasscontext(char *, unsigned int);
-int	setusercontext(login_cap_t *, struct passwd *, uid_t, unsigned int);
+int setclasscontext(char *, unsigned int);
+int setusercontext(login_cap_t *, struct passwd *, uid_t, unsigned int);
+#endif
 
 #ifdef __cplusplus
 }

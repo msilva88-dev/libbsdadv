@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include "../features.h"
 
+#ifdef _BSD_SOURCE
 void arc4random_buf(void *, size_t) HIDDEN_A;
+#endif
 
 #endif

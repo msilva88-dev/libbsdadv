@@ -22,11 +22,13 @@
 #include "features.h"
 
 #ifndef LIBC_WITH_BSD
+#ifdef _BSD_SOURCE
 char *cgetcap(char *, const char *, int) HIDDEN_A;
 int cgetent(char **, char **, const char *) HIDDEN_A;
 int cgetstr(char *, const char *, char **) HIDDEN_A;
 int cgetustr(char *, const char *, char **) HIDDEN_A;
 long long strtonum(const char *, long long, long long, const char **) HIDDEN_A;
+#endif
 #endif
 
 #endif

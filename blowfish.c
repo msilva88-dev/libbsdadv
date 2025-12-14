@@ -50,6 +50,10 @@
 #include <string.h>
 #endif
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #if defined(BLF)
 #include "features.h"
 #include "blf.h"

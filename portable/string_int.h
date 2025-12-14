@@ -21,6 +21,8 @@
 #include <string.h>
 #include "../features.h"
 
+#ifdef _BSD_SOURCE
 int timingsafe_bcmp(const void *, const void *, size_t) HIDDEN_A;
+#endif
 
 #endif

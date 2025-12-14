@@ -34,6 +34,10 @@
 
 /* fparseln code from OpenBSD 7.0 source code: lib/libutil/fparseln.c */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

@@ -25,6 +25,10 @@
  * lib/libc/crypt/bcrypt.c
  */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <stdlib.h>
 #include <time.h>
 #include "pwd_int.h"

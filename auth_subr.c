@@ -53,6 +53,10 @@
 
 /* auth_subr code from OpenBSD 7.0 source code: lib/libc/gen/auth_subr.c */
 
+/* Ignore deprecated warning in GNU libc */
+#define _DEFAULT_SOURCE
+
+#define _BSD_SOURCE
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/socket.h>

@@ -69,6 +69,7 @@ typedef struct BlowfishContext {
  *	Blowfish_expand0state( state, key, keylen )
  */
 
+#ifdef _BSD_SOURCE
 void Blowfish_encipher(blf_ctx *, uint32_t *, uint32_t *);
 void Blowfish_decipher(blf_ctx *, uint32_t *, uint32_t *);
 void Blowfish_initstate(blf_ctx *);
@@ -90,6 +91,7 @@ void blf_cbc_decrypt(blf_ctx *, uint8_t *, uint8_t *, uint32_t);
 
 /* Converts uint8_t to uint32_t */
 uint32_t Blowfish_stream2word(const uint8_t *, uint16_t , uint16_t *);
+#endif
 
 #ifdef __cplusplus
 }
