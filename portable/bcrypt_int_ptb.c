@@ -216,7 +216,6 @@ inval:
 /*
  * user friendly functions
  */
-DEF_WEAK(bcrypt_newhash);
 int
 bcrypt_newhash(const char *pass, int log_rounds, char *hash, size_t hashlen)
 {
@@ -232,7 +231,6 @@ bcrypt_newhash(const char *pass, int log_rounds, char *hash, size_t hashlen)
 	return 0;
 }
 
-DEF_WEAK(bcrypt_checkpass);
 int
 bcrypt_checkpass(const char *pass, const char *goodhash)
 {

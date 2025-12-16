@@ -92,7 +92,6 @@ static int	usedb = 1;
  * If (cap, '@') or (cap, terminator, '@') is found before (cap, terminator)
  * return NULL.
  */
-DEF_WEAK(cgetcap);
 char *
 cgetcap(char *buf, const char *cap, int type)
 {
@@ -144,7 +143,6 @@ cgetcap(char *buf, const char *cap, int type)
  * encountered (couldn't open/read a file, etc.), and -3 if a potential
  * reference loop is detected.
  */
-DEF_WEAK(cgetent);
 int
 cgetent(char **buf, char **db_array, const char *name)
 {
@@ -621,7 +619,6 @@ cgetmatch(char *buf, const char *name)
  * couldn't be found, -2 if a system error was encountered (storage
  * allocation failure).
  */
-DEF_WEAK(cgetstr);
 int
 cgetstr(char *buf, const char *cap, char **str)
 {
@@ -753,7 +750,6 @@ cgetstr(char *buf, const char *cap, char **str)
  * -1 if the requested string capability couldn't be found, -2 if a system
  * error was encountered (storage allocation failure).
  */
-DEF_WEAK(cgetustr);
 int
 cgetustr(char *buf, const char *cap, char **str)
 {

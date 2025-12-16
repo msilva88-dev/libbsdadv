@@ -54,7 +54,6 @@ do {							\
 	}						\
 } while (0)
 
-DEF_WEAK(pw_dup);
 struct passwd *
 pw_dup(const struct passwd *pw)
 {

@@ -214,7 +214,6 @@ static const uint64_t sha512_initial_hash_value[8] = {
 };
 
 /*** SHA-512: *********************************************************/
-DEF_WEAK(SHA512Init);
 void SHA512Init(SHA2_CTX *context)
 {
 	memcpy(context->state.st64, sha512_initial_hash_value,
@@ -379,7 +378,6 @@ static void SHA512Transform(uint64_t state[8], const uint8_t data[SHA512_BLOCK_L
 
 #endif /* SHA2_UNROLL_TRANSFORM */
 
-DEF_WEAK(SHA512Update);
 void SHA512Update(SHA2_CTX *context, const uint8_t *data, size_t len)
 {
 	size_t	freespace, usedspace;
@@ -467,7 +465,6 @@ static void SHA512Pad(SHA2_CTX *context)
 	usedspace = 0;
 }
 
-DEF_WEAK(SHA512Final);
 void SHA512Final(uint8_t digest[SHA512_DIGEST_LENGTH], SHA2_CTX *context)
 {
 	SHA512Pad(context);

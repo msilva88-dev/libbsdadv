@@ -37,7 +37,6 @@
 #define	TOOSMALL	2
 #define	TOOLARGE	3
 
-DEF_WEAK(strtonum);
 long long
 strtonum(const char *numstr, long long minval, long long maxval,
     const char **errstrp)

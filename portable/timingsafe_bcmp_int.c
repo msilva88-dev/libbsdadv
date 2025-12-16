@@ -30,7 +30,6 @@
 #define _BSD_SOURCE
 #include "string_int.h"
 
-DEF_WEAK(timingsafe_bcmp);
 int
 timingsafe_bcmp(const void *b1, const void *b2, size_t n)
 {

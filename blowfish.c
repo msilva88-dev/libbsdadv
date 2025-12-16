@@ -131,7 +131,9 @@ Blowfish_decipher(blf_ctx *c, uint32_t *xl, uint32_t *xr)
 }
 #endif
 
+#if defined(BLF) || defined(LIBC_WITH_BSD)
 DEF_WEAK(Blowfish_initstate);
+#endif
 void
 Blowfish_initstate(blf_ctx *c)
 {
@@ -411,7 +413,9 @@ Blowfish_initstate(blf_ctx *c)
 	*c = initstate;
 }
 
+#if defined(BLF) || defined(LIBC_WITH_BSD)
 DEF_WEAK(Blowfish_stream2word);
+#endif
 uint32_t
 Blowfish_stream2word(const uint8_t *data, uint16_t databytes,
     uint16_t *current)
@@ -433,7 +437,9 @@ Blowfish_stream2word(const uint8_t *data, uint16_t databytes,
 	return temp;
 }
 
+#if defined(BLF) || defined(LIBC_WITH_BSD)
 DEF_WEAK(Blowfish_expand0state);
+#endif
 void
 Blowfish_expand0state(blf_ctx *c, const uint8_t *key, uint16_t keybytes)
 {
@@ -471,7 +477,9 @@ Blowfish_expand0state(blf_ctx *c, const uint8_t *key, uint16_t keybytes)
 	}
 }
 
+#if defined(BLF) || defined(LIBC_WITH_BSD)
 DEF_WEAK(Blowfish_expandstate);
+#endif
 void
 Blowfish_expandstate(blf_ctx *c, const uint8_t *data, uint16_t databytes,
     const uint8_t *key, uint16_t keybytes)
@@ -528,7 +536,9 @@ blf_key(blf_ctx *c, const uint8_t *k, uint16_t len)
 }
 #endif
 
+#if defined(BLF) || defined(LIBC_WITH_BSD)
 DEF_WEAK(blf_enc);
+#endif
 void
 blf_enc(blf_ctx *c, uint32_t *data, uint16_t blocks)
 {
