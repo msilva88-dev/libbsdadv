@@ -51,16 +51,16 @@ extern "C" {
  * of the key affect all cipherbits.
  */
 
-#include <stdint.h>
+#include <sys/types.h>
 
-#define BLF_N	16			/* Number of Subkeys */
+#define BLF_N 16			/* Number of Subkeys */
 #define BLF_MAXKEYLEN ((BLF_N-2)*4)	/* 448 bits */
 #define BLF_MAXUTILIZED ((BLF_N+2)*4)	/* 576 bits */
 
 /* Blowfish context */
 typedef struct BlowfishContext {
-	uint32_t S[4][256];	/* S-Boxes */
-	uint32_t P[BLF_N + 2];	/* Subkeys */
+	u_int32_t S[4][256];	/* S-Boxes */
+	u_int32_t P[BLF_N + 2];	/* Subkeys */
 } blf_ctx;
 
 /* Raw access to customized Blowfish
@@ -70,27 +70,27 @@ typedef struct BlowfishContext {
  */
 
 #ifdef _BSD_SOURCE
-void Blowfish_encipher(blf_ctx *, uint32_t *, uint32_t *);
-void Blowfish_decipher(blf_ctx *, uint32_t *, uint32_t *);
+void Blowfish_encipher(blf_ctx *, u_int32_t *, u_int32_t *);
+void Blowfish_decipher(blf_ctx *, u_int32_t *, u_int32_t *);
 void Blowfish_initstate(blf_ctx *);
-void Blowfish_expand0state(blf_ctx *, const uint8_t *, uint16_t);
+void Blowfish_expand0state(blf_ctx *, const u_int8_t *, u_int16_t);
 void Blowfish_expandstate
-(blf_ctx *, const uint8_t *, uint16_t, const uint8_t *, uint16_t);
+(blf_ctx *, const u_int8_t *, u_int16_t, const u_int8_t *, u_int16_t);
 
 /* Standard Blowfish */
 
-void blf_key(blf_ctx *, const uint8_t *, uint16_t);
-void blf_enc(blf_ctx *, uint32_t *, uint16_t);
-void blf_dec(blf_ctx *, uint32_t *, uint16_t);
+void blf_key(blf_ctx *, const u_int8_t *, u_int16_t);
+void blf_enc(blf_ctx *, u_int32_t *, u_int16_t);
+void blf_dec(blf_ctx *, u_int32_t *, u_int16_t);
 
-void blf_ecb_encrypt(blf_ctx *, uint8_t *, uint32_t);
-void blf_ecb_decrypt(blf_ctx *, uint8_t *, uint32_t);
+void blf_ecb_encrypt(blf_ctx *, u_int8_t *, u_int32_t);
+void blf_ecb_decrypt(blf_ctx *, u_int8_t *, u_int32_t);
 
-void blf_cbc_encrypt(blf_ctx *, uint8_t *, uint8_t *, uint32_t);
-void blf_cbc_decrypt(blf_ctx *, uint8_t *, uint8_t *, uint32_t);
+void blf_cbc_encrypt(blf_ctx *, u_int8_t *, u_int8_t *, u_int32_t);
+void blf_cbc_decrypt(blf_ctx *, u_int8_t *, u_int8_t *, u_int32_t);
 
-/* Converts uint8_t to uint32_t */
-uint32_t Blowfish_stream2word(const uint8_t *, uint16_t , uint16_t *);
+/* Converts u_int8_t to u_int32_t */
+u_int32_t Blowfish_stream2word(const u_int8_t *, u_int16_t , u_int16_t *);
 #endif
 
 #ifdef __cplusplus

@@ -43,22 +43,22 @@
 #ifndef _LIBBSD4_PORTABLE_BLF_INT_H
 #define _LIBBSD4_PORTABLE_BLF_INT_H
 
-#include <stdint.h>
+#include <sys/types.h>
 #include "../features.h"
 
 #define BLF_N 16
 
 typedef struct BlowfishContext {
-	uint32_t S[4][256];	/* S-Boxes */
-	uint32_t P[BLF_N + 2];	/* Subkeys */
+	u_int32_t S[4][256];	/* S-Boxes */
+	u_int32_t P[BLF_N + 2];	/* Subkeys */
 } blf_ctx;
 
 #ifdef _BSD_SOURCE
-void blf_enc(blf_ctx *, uint32_t *, uint16_t) HIDDEN_A;
-uint32_t Blowfish_stream2word(const uint8_t *, uint16_t , uint16_t *) HIDDEN_A;
-void Blowfish_expand0state(blf_ctx *, const uint8_t *, uint16_t) HIDDEN_A;
-void Blowfish_expandstate(blf_ctx *, const uint8_t *, uint16_t,
-	const uint8_t *, uint16_t) HIDDEN_A;
+void blf_enc(blf_ctx *, u_int32_t *, u_int16_t) HIDDEN_A;
+u_int32_t Blowfish_stream2word(const u_int8_t *, u_int16_t , u_int16_t *) HIDDEN_A;
+void Blowfish_expand0state(blf_ctx *, const u_int8_t *, u_int16_t) HIDDEN_A;
+void Blowfish_expandstate(blf_ctx *, const u_int8_t *, u_int16_t,
+	const u_int8_t *, u_int16_t) HIDDEN_A;
 void Blowfish_initstate(blf_ctx *) HIDDEN_A;
 #endif
 

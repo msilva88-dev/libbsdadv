@@ -59,10 +59,10 @@ extern "C" {
 #define _NG_GROUP	 2
 
 struct netgroup {
-	char		*ng_host;	/* host name */
-	char		*ng_user;	/* user name */
-	char		*ng_domain;	/* domain name */
-	struct netgroup	*ng_next;	/* thread */
+	char *ng_host; /* host name */
+	char *ng_user; /* user name */
+	char *ng_domain; /* domain name */
+	struct netgroup	*ng_next; /* thread */
 };
 
 #ifdef _BSD_SOURCE

@@ -54,6 +54,7 @@
 #define _DEFAULT_SOURCE
 
 #define _BSD_SOURCE
+#include <stdint.h>
 #if defined(BLF)
 #include "features.h"
 #include "blf.h"
@@ -79,7 +80,7 @@ void
 #else
 static void
 #endif
-Blowfish_encipher(blf_ctx *c, uint32_t *xl, uint32_t *xr)
+Blowfish_encipher(blf_ctx *c, u_int32_t *xl, u_int32_t *xr)
 {
 	uint32_t Xl;
 	uint32_t Xr;
@@ -106,7 +107,7 @@ Blowfish_encipher(blf_ctx *c, uint32_t *xl, uint32_t *xr)
 #ifdef BLF
 DEF_WEAK(Blowfish_decipher);
 void
-Blowfish_decipher(blf_ctx *c, uint32_t *xl, uint32_t *xr)
+Blowfish_decipher(blf_ctx *c, u_int32_t *xl, u_int32_t *xr)
 {
 	uint32_t Xl;
 	uint32_t Xr;
@@ -416,9 +417,9 @@ Blowfish_initstate(blf_ctx *c)
 #if defined(BLF) || defined(LIBC_WITH_BSD)
 DEF_WEAK(Blowfish_stream2word);
 #endif
-uint32_t
-Blowfish_stream2word(const uint8_t *data, uint16_t databytes,
-    uint16_t *current)
+u_int32_t
+Blowfish_stream2word(const u_int8_t *data, u_int16_t databytes,
+    u_int16_t *current)
 {
 	uint8_t i;
 	uint16_t j;
@@ -441,7 +442,7 @@ Blowfish_stream2word(const uint8_t *data, uint16_t databytes,
 DEF_WEAK(Blowfish_expand0state);
 #endif
 void
-Blowfish_expand0state(blf_ctx *c, const uint8_t *key, uint16_t keybytes)
+Blowfish_expand0state(blf_ctx *c, const u_int8_t *key, u_int16_t keybytes)
 {
 	uint16_t i;
 	uint16_t j;
@@ -481,8 +482,8 @@ Blowfish_expand0state(blf_ctx *c, const uint8_t *key, uint16_t keybytes)
 DEF_WEAK(Blowfish_expandstate);
 #endif
 void
-Blowfish_expandstate(blf_ctx *c, const uint8_t *data, uint16_t databytes,
-    const uint8_t *key, uint16_t keybytes)
+Blowfish_expandstate(blf_ctx *c, const u_int8_t *data, u_int16_t databytes,
+    const u_int8_t *key, u_int16_t keybytes)
 {
 	uint16_t i;
 	uint16_t j;
@@ -526,7 +527,7 @@ Blowfish_expandstate(blf_ctx *c, const uint8_t *data, uint16_t databytes,
 #ifdef BLF
 DEF_WEAK(blf_key);
 void
-blf_key(blf_ctx *c, const uint8_t *k, uint16_t len)
+blf_key(blf_ctx *c, const u_int8_t *k, u_int16_t len)
 {
 	/* Initialize S-boxes and subkeys with Pi */
 	Blowfish_initstate(c);
@@ -540,7 +541,7 @@ blf_key(blf_ctx *c, const uint8_t *k, uint16_t len)
 DEF_WEAK(blf_enc);
 #endif
 void
-blf_enc(blf_ctx *c, uint32_t *data, uint16_t blocks)
+blf_enc(blf_ctx *c, u_int32_t *data, u_int16_t blocks)
 {
 	uint32_t *d;
 	uint16_t i;
@@ -555,7 +556,7 @@ blf_enc(blf_ctx *c, uint32_t *data, uint16_t blocks)
 #ifdef BLF
 DEF_WEAK(blf_dec);
 void
-blf_dec(blf_ctx *c, uint32_t *data, uint16_t blocks)
+blf_dec(blf_ctx *c, u_int32_t *data, u_int16_t blocks)
 {
 	uint32_t *d;
 	uint16_t i;
@@ -571,7 +572,7 @@ blf_dec(blf_ctx *c, uint32_t *data, uint16_t blocks)
 #ifdef BLF
 DEF_WEAK(blf_ecb_encrypt);
 void
-blf_ecb_encrypt(blf_ctx *c, uint8_t *data, uint32_t len)
+blf_ecb_encrypt(blf_ctx *c, u_int8_t *data, u_int32_t len)
 {
 	uint32_t l, r;
 	uint32_t i;
@@ -596,7 +597,7 @@ blf_ecb_encrypt(blf_ctx *c, uint8_t *data, uint32_t len)
 #ifdef BLF
 DEF_WEAK(blf_ecb_decrypt);
 void
-blf_ecb_decrypt(blf_ctx *c, uint8_t *data, uint32_t len)
+blf_ecb_decrypt(blf_ctx *c, u_int8_t *data, u_int32_t len)
 {
 	uint32_t l, r;
 	uint32_t i;
@@ -621,7 +622,7 @@ blf_ecb_decrypt(blf_ctx *c, uint8_t *data, uint32_t len)
 #ifdef BLF
 DEF_WEAK(blf_cbc_encrypt);
 void
-blf_cbc_encrypt(blf_ctx *c, uint8_t *iv, uint8_t *data, uint32_t len)
+blf_cbc_encrypt(blf_ctx *c, u_int8_t *iv, u_int8_t *data, u_int32_t len)
 {
 	uint32_t l, r;
 	uint32_t i, j;
@@ -649,7 +650,7 @@ blf_cbc_encrypt(blf_ctx *c, uint8_t *iv, uint8_t *data, uint32_t len)
 #ifdef BLF
 DEF_WEAK(blf_cbc_decrypt);
 void
-blf_cbc_decrypt(blf_ctx *c, uint8_t *iva, uint8_t *data, uint32_t len)
+blf_cbc_decrypt(blf_ctx *c, u_int8_t *iva, u_int8_t *data, u_int32_t len)
 {
 	uint32_t l, r;
 	uint8_t *iv;
@@ -702,10 +703,9 @@ report(uint32_t data[], uint16_t len)
 void
 main(void)
 {
-
 	blf_ctx c;
-	char    key[] = "AAAAA";
-	char    key2[] = "abcdefghijklmnopqrstuvwxyz";
+	char key[] = "AAAAA";
+	char key2[] = "abcdefghijklmnopqrstuvwxyz";
 
 	uint32_t data[10];
 	uint32_t data2[] =
