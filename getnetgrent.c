@@ -53,6 +53,7 @@
 #include <bsddb.h>
 #endif
 #ifdef YP
+#include <limits.h>
 #include <rpcsvc/ypclnt.h>
 #endif
 #include "features.h"

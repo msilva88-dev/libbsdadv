@@ -199,12 +199,26 @@ LD_CMD != printf "%s" "$(LD_PATH_CMD)" | sed "s|.*/||" 2>/dev/null
 
 # Optional Feature Flags
 OPTFLAG_BLF_CMD != sh -c '\
-[ "$(ENABLE_BLF)" = "true" ] && printf "%s%s" "-D" "BLF"; \
-' 2>/dev/null || true
+case "$(ENABLE_BLF)" in \
+    true) \
+        printf "%s%s" "-D" "BLF" \
+        ;; \
+    false|*) \
+        printf "%s%s" "" "" \
+        ;; \
+esac \
+' 2>/dev/null
 OPTFLAG_BLF := $(OPTFLAG_BLF_CMD)
 OPTFLAG_BSDDB_CMD != sh -c '\
-[ "$(ENABLE_BSDDB)" = "true" ] && printf "%s%s" "-D" "BSDDB"; \
-' 2>/dev/null || true
+case "$(ENABLE_BSDDB)" in \
+    true) \
+        printf "%s%s" "-D" "BSDDB" \
+        ;; \
+    false|*) \
+        printf "%s%s" "" "" \
+        ;; \
+esac \
+' 2>/dev/null
 OPTFLAG_BSDDB := $(OPTFLAG_BSDDB_CMD)
 OPTFLAG_LIBCBSD_CMD != sh -c '\
 case "$(USE_LIBC_WITH_BSDLIB)" in \
@@ -218,8 +232,15 @@ esac \
 ' 2>/dev/null
 OPTFLAG_LIBCBSD := $(OPTFLAG_LIBCBSD_CMD)
 OPTFLAG_YP_CMD != sh -c '\
-[ "$(ENABLE_YP)" = "true" ] && printf "%s%s" "-D" "YP"; \
-' 2>/dev/null || true
+case "$(ENABLE_YP)" in \
+    true) \
+        printf "%s%s" "-D" "YP" \
+        ;; \
+    false|*) \
+        printf "%s%s" "" "" \
+        ;; \
+esac \
+' 2>/dev/null
 OPTFLAG_YP := $(OPTFLAG_YP_CMD)
 
 # Set appropriate flags in clang v11, GCC v8 and Binutils as v2.34
@@ -423,6 +444,19 @@ case "$(DEBUG)" in \
 esac \
 ' 2>/dev/null
 
+# Linker Flags for optional libraries
+LNK_LDFLAG_YP_CMD != sh -c '\
+case "$(ENABLE_YP)" in \
+    true) \
+        printf "%s%s %s%s" "-l" "tirpc" "-l" "nsl" \
+        ;; \
+    false|*) \
+        printf "%s%s" "" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LNK_LDFLAGS := $(LNK_LDFLAG_YP_CMD)
+
 # Linker Flags for shared code
 DFT_SHAREDLDFLAGS := -shared
 
@@ -542,11 +576,11 @@ $(BUILDDIR)/portable/timingsafe_bcmp_int.o: portable/timingsafe_bcmp_int.c
 $(BUILDDIR)/libbsd4.so: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
 	if [ "$(BUILD_PORTABLE)" = "true" ]; then \
 	    $(CC) $(LDFLAGS) $(DFT_LIBFLAGS) $(DFT_SHAREDLDFLAGS) \
-	      -o "$(BUILDDIR)/libbsd4.so" $?; \
+	      -o "$(BUILDDIR)/libbsd4.so" $? $(LNK_LDFLAGS); \
 	else \
 	    $(CC) $(LDFLAGS) $(DFT_LIBFLAGS) $(DFT_SHAREDLDFLAGS) \
 	      -o "$(BUILDDIR)/libbsd4.so" \
-              $(LIBBSD4_OBJS) $(COMMON_OBJS); \
+              $(LIBBSD4_OBJS) $(COMMON_OBJS) $(LNK_LDFLAGS); \
 	fi
 $(BUILDDIR)/libbsd4.a: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
 	if [ "$(BUILD_PORTABLE)" = "true" ]; then \
