@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 /*
  * FILE:	sha2.h
  * AUTHOR:	Aaron D. Gifford <me@aarongifford.com>
