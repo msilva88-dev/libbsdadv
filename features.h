@@ -18,10 +18,27 @@
 #ifndef _LIBBSD4_FEATURES_INT_H
 #define _LIBBSD4_FEATURES_INT_H
 
+#ifndef ALIGN
+#undef _ALIGNBYTES
+#if defined(__aarch64__) || defined(__powerpc64__) \
+	|| (defined(__riscv) && (__riscv_xlen == 64)) || defined(__x86_64__)
+#define _ALIGNBYTES (sizeof(long) - 1)
+#elif defined(__i386__)
+#define _ALIGNBYTES (sizeof(int) - 1)
+#else
+#define _ALIGNBYTES (sizeof(double) - 1)
+#endif
+#define ALIGN(p) (((unsigned long)(p) + _ALIGNBYTES) & ~_ALIGNBYTES)
+#endif
+
 #ifdef __GNUC__
 #define DEF_WEAK(x) \
-	extern __typeof(x) __##x __attribute__((__alias__(#x))); \
-	extern __typeof(__##x) __##x __attribute__((__weak__));
+	extern __typeof(x) x __attribute__((__weak__)); \
+	extern __typeof(x) __bsd4_##x __attribute__((__alias__(#x)))
+	/*
+	 * No trailing ";" after this macro
+	 * to prevent Clang's [-Wextra-semi] warning.
+	 */
 #define FALLTHROUGH_A __attribute__((__fallthrough__));
 #define HIDDEN_A __attribute__((__visibility__("hidden")))
 #define UNUSED_A __attribute__((__unused__))

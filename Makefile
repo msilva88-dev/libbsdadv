@@ -32,6 +32,7 @@ DIRPERM ?= 0755
 DIRPGRP ?= false
 ENABLE_BLF ?= false
 ENABLE_BSDDB ?= false
+ENABLE_GETPW ?= false
 ENABLE_SHARED ?= true
 ENABLE_DYNAMIC ?= false
 ENABLE_YP ?= false
@@ -67,6 +68,7 @@ PREFIX ?= usr
 PFIXOWN ?= $(DIRGRP)
 PFIXGRP ?= $(DIROWN)
 PFIXPERM ?= $(DIRPERM)
+PKG_CONFIG ?= $(PKG_CONFIG_CMD)
 SHAREDIR ?= $(PREFIX)/share
 SHRDOWN ?= $(DIRGRP)
 SHRDGRP ?= $(DIROWN)
@@ -173,7 +175,7 @@ printf "%s%s%s" "$${_DYNAMIC}" "$${_SP}" "$${_STATIC}" \
 ' 2>/dev/null
 BUILD_LIBRARY := $(BUILD_LIBRARY_CMD)
 
-# Default C compiler command flags
+# Default static archiver command flags
 AR_PATH_CMD != sh -c '\
 command -v binutils-ar 2>/dev/null || command -v llvm-ar 2>/dev/null \
   || command -v ar 2>/dev/null || printf "%s" "ar" \
@@ -187,13 +189,20 @@ command -v clang 2>/dev/null || command -v gcc 2>/dev/null \
 ' 2>/dev/null
 CC_CMD != printf "%s" "$(CC_PATH_CMD)" | sed "s|.*/||" 2>/dev/null
 
-# Default Linker compiler command flags
+# Default linker command flags
 LD_PATH_CMD != sh -c '\
 command -v mold 2>/dev/null || command -v lld 2>/dev/null \
   || command -v ld.gold 2>/dev/null || command -v ld.bfd 2>/dev/null \
   || command -v ld 2>/dev/null  || printf "%s" "ld.bfd" \
 ' 2>/dev/null
 LD_CMD != printf "%s" "$(LD_PATH_CMD)" | sed "s|.*/||" 2>/dev/null
+
+# Default package configurator command flags
+PKG_CONFIG_PATH_CMD != sh -c '\
+command -v pkg-config 2>/dev/null || printf "%s" "pkg-config" \
+' 2>/dev/null
+PKG_CONFIG_CMD != printf "%s" "$(PKG_CONFIG_PATH_CMD)" | sed "s|.*/||" 2>/dev/null
+
 
 ## Compiler
 
@@ -242,6 +251,17 @@ case "$(ENABLE_YP)" in \
 esac \
 ' 2>/dev/null
 OPTFLAG_YP := $(OPTFLAG_YP_CMD)
+OPTFLAG_RPC_HDR_CMD != sh -c '\
+case "$(ENABLE_YP)" in \
+    true) \
+        $(PKG_CONFIG) --cflags libtirpc \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+OPTFLAG_RPC_HDR := $(OPTFLAG_RPC_HDR_CMD)
 
 # Set appropriate flags in clang v11, GCC v8 and Binutils as v2.34
 # (any language)
@@ -467,6 +487,23 @@ LDFLAGS := $(DFT_LDFLAGS_CMD)
 
 LIBS := $(BUILD_LIBRARY)
 
+#        if [ "$(ENABLE_BSDDB)" = "true" ]; then \
+#            printf "%s" "true"; \
+#        else \
+#            printf "%s" "false"; \
+#        fi \
+OPT_GETPW_ENABLED_CMD != sh -c '\
+case "$(ENABLE_GETPW)" in \
+    true) \
+        printf "%s" "true" \
+        ;; \
+    false|*) \
+        printf "%s" "false" \
+        ;; \
+esac \
+' 2>/dev/null
+OPT_GETPW_ENABLED := $(OPT_GETPW_ENABLED_CMD)
+
 COMMON_OBJS :=
 PORTABLE_SHA2_INT_OBJ_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
@@ -486,7 +523,7 @@ PORTABLE_OBJS += $(BUILDDIR)/portable/pw_dup_int.o
 PORTABLE_OBJS += $(PORTABLE_SHA2_INT_OBJ_CMD)
 PORTABLE_OBJS += $(BUILDDIR)/portable/strtonum_int.o
 PORTABLE_OBJS += $(BUILDDIR)/portable/timingsafe_bcmp_int.o
-BCRYPT_PBKDF_OBJ_CMD != sh -c '\
+LIBBSD4_BCRYPT_PBKDF_OBJ_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
         printf "%s" "$(BUILDDIR)/bcrypt_pbkdf.o" \
@@ -496,16 +533,89 @@ case "$(ENABLE_BLF)" in \
         ;; \
 esac \
 ' 2>/dev/null
+LIBBSD4_GETPWENT_OBJ_CMD != sh -c '\
+case "$(ENABLE_GETPW)" in \
+    true) \
+        printf "%s" "$(BUILDDIR)/getpwent.o" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSD4_YP_CHECK_INT_OBJ_CMD != sh -c '\
+case "$(ENABLE_GETPW)" in \
+    true) \
+        case "$(ENABLE_YP)" in \
+            true) \
+                printf "%s" "$(BUILDDIR)/yp_check_int.o" \
+                ;; \
+            false|*) \
+                printf "%s" "" \
+                ;; \
+        esac \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSD4_YPEXCLUDE_INT_OBJ_CMD != sh -c '\
+case "$(ENABLE_GETPW)" in \
+    true) \
+        case "$(ENABLE_YP)" in \
+            true) \
+                printf "%s" "$(BUILDDIR)/ypexclude_int.o" \
+                ;; \
+            false|*) \
+                printf "%s" "" \
+                ;; \
+        esac \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
 LIBBSD4_OBJS := $(BUILDDIR)/authenticate.o $(BUILDDIR)/auth_subr.o
-LIBBSD4_OBJS += $(BUILDDIR)/bcrypt_int.o $(BCRYPT_PBKDF_OBJ_CMD)
+LIBBSD4_OBJS += $(BUILDDIR)/bcrypt_int.o $(LIBBSD4_BCRYPT_PBKDF_OBJ_CMD)
 LIBBSD4_OBJS += $(BUILDDIR)/blowfish.o $(BUILDDIR)/check_expire.o
 LIBBSD4_OBJS += $(BUILDDIR)/cryptutil.o $(BUILDDIR)/fparseln.o
-LIBBSD4_OBJS += $(BUILDDIR)/getnetgrent.o $(BUILDDIR)/login_cap.o
+LIBBSD4_OBJS += $(BUILDDIR)/getnetgrent.o $(LIBBSD4_GETPWENT_OBJ_CMD)
+LIBBSD4_OBJS += $(BUILDDIR)/login_cap.o $(LIBBSD4_YP_CHECK_INT_OBJ_CMD)
+LIBBSD4_OBJS += $(LIBBSD4_YPEXCLUDE_INT_OBJ_CMD)
 
 LIBBSD4_BLF_HDR_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
-        printf "%s" "blf.h util_bsd4_with_blf.h" \
+        printf "%s" "blf.h" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSD4_PWD_HDR_CMD != sh -c '\
+case "$(ENABLE_GETPW)" in \
+    true) \
+        case "$(ENABLE_BSDDB)" in \
+            true) \
+                printf "%s" "pwd_bsd4.h" \
+                ;; \
+            false|*) \
+                printf "%s" "pwd_bsd4_without_bsddb.h" \
+                ;; \
+        esac \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSD4_UTIL_HDR_CMD != sh -c '\
+case "$(ENABLE_BLF)" in \
+    true) \
+        printf "%s" "util_bsd4_with_blf.h" \
         ;; \
     false|*) \
         printf "%s" "util_bsd4.h" \
@@ -513,7 +623,7 @@ case "$(ENABLE_BLF)" in \
 esac \
 ' 2>/dev/null
 LIBBSD4_HDRS := $(LIBBSD4_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
-LIBBSD4_HDRS += unistd_bsd4.h
+LIBBSD4_HDRS += $(LIBBSD4_PWD_HDR_CMD) unistd_bsd4.h $(LIBBSD4_UTIL_HDR_CMD)
 
 LIBBSD4_BLF_MAN_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
@@ -525,9 +635,19 @@ case "$(ENABLE_BLF)" in \
         ;; \
 esac \
 ' 2>/dev/null
+LIBBSD4_GETPW_MAN_CMD != sh -c '\
+case "$(ENABLE_GETPW)" in \
+    true) \
+        printf "%s" "getpwent.3 getpwnam.3" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
 LIBBSD4_MANS := authenticate.3 auth_subr.3 $(LIBBSD4_BLF_MAN_CMD)
 LIBBSD4_MANS += check_expire.3 crypt_checkpass.3 fparseln.3 getnetgrent.3
-LIBBSD4_MANS += login_cap.3
+LIBBSD4_MANS += $(LIBBSD4_GETPW_MAN_CMD) login_cap.3
 
 ## build
 
@@ -544,7 +664,8 @@ $(BUILDDIR)/auth_subr.o: auth_subr.c
 $(BUILDDIR)/bcrypt_int.o: bcrypt_int.c
 	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/blowfish.o: blowfish.c
-	$(CC) $(CFLAGS) $(OPTFLAG_BLF) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) \
+	  $(OPTFLAG_BLF) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/bcrypt_pbkdf.o: bcrypt_pbkdf.c
 	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/check_expire.o: check_expire.c
@@ -554,9 +675,18 @@ $(BUILDDIR)/cryptutil.o: cryptutil.c
 $(BUILDDIR)/fparseln.o: fparseln.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/getnetgrent.o: getnetgrent.c
-	$(CC) $(CFLAGS) $(OPTFLAG_BSDDB) $(OPTFLAG_YP) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) \
+	  $(OPTFLAG_BSDDB) $(OPTFLAG_YP) $(DFT_LIBFLAGS) -c $? -o $@
+$(BUILDDIR)/getpwent.o: getpwent.c
+	$(CC) $(CFLAGS) \
+	  $(OPTFLAG_BSDDB) $(OPTFLAG_YP) $(OPTFLAG_RPC_HDR) $(DFT_LIBFLAGS) \
+	  -c $? -o $@
 $(BUILDDIR)/login_cap.o: login_cap.c
 	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+$(BUILDDIR)/yp_check_int.o: yp_check_int.c
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+$(BUILDDIR)/ypexclude_int.o: ypexclude_int.c
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/portable/arc4random_int.o: portable/arc4random_int.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/portable/bcrypt_int_ptb.o: portable/bcrypt_int_ptb.c
@@ -638,6 +768,9 @@ install-hdr: $(LIBBSD4_HDRS)
 	    chown "$(INCFOWN):$(INCFGRP)" \
 	      "$(DESTDIR)/$(INCLUDEDIR)/$${FILE}"; \
 	done
+	[ ! -f "$(DESTDIR)/$(INCLUDEDIR)/pwd_bsd4_without_bsddb.h" ] \
+	    || mv "$(DESTDIR)/$(INCLUDEDIR)/pwd_bsd4_without_bsddb.h" \
+	    "$(DESTDIR)/$(INCLUDEDIR)/pwd_bsd4.h"
 	[ ! -f "$(DESTDIR)/$(INCLUDEDIR)/util_bsd4_with_blf.h" ] \
 	    || mv "$(DESTDIR)/$(INCLUDEDIR)/util_bsd4_with_blf.h" \
 	    "$(DESTDIR)/$(INCLUDEDIR)/util_bsd4.h"
