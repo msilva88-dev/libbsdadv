@@ -158,7 +158,6 @@ case "$(USE_LIBC_WITH_BSDLIB)" in \
         ;; \
 esac \
 ' 2>/dev/null
-BUILD_PORTABLE := $(BUILD_PORTABLE_CMD)
 
 # Target library flags
 BUILD_LIBRARY_CMD != sh -c '\
@@ -173,7 +172,6 @@ fi; \
 [ -n "$${_DYNAMIC}" ] && _SP=" "; \
 printf "%s%s%s" "$${_DYNAMIC}" "$${_SP}" "$${_STATIC}" \
 ' 2>/dev/null
-BUILD_LIBRARY := $(BUILD_LIBRARY_CMD)
 
 # Default static archiver command flags
 AR_PATH_CMD != sh -c '\
@@ -217,7 +215,6 @@ case "$(ENABLE_BLF)" in \
         ;; \
 esac \
 ' 2>/dev/null
-OPTFLAG_BLF := $(OPTFLAG_BLF_CMD)
 OPTFLAG_BSDDB_CMD != sh -c '\
 case "$(ENABLE_BSDDB)" in \
     true) \
@@ -228,7 +225,6 @@ case "$(ENABLE_BSDDB)" in \
         ;; \
 esac \
 ' 2>/dev/null
-OPTFLAG_BSDDB := $(OPTFLAG_BSDDB_CMD)
 OPTFLAG_LIBCBSD_CMD != sh -c '\
 case "$(USE_LIBC_WITH_BSDLIB)" in \
     true) \
@@ -239,7 +235,6 @@ case "$(USE_LIBC_WITH_BSDLIB)" in \
         ;; \
 esac \
 ' 2>/dev/null
-OPTFLAG_LIBCBSD := $(OPTFLAG_LIBCBSD_CMD)
 OPTFLAG_YP_CMD != sh -c '\
 case "$(ENABLE_YP)" in \
     true) \
@@ -250,7 +245,6 @@ case "$(ENABLE_YP)" in \
         ;; \
 esac \
 ' 2>/dev/null
-OPTFLAG_YP := $(OPTFLAG_YP_CMD)
 OPTFLAG_RPC_HDR_CMD != sh -c '\
 case "$(ENABLE_YP)" in \
     true) \
@@ -261,7 +255,6 @@ case "$(ENABLE_YP)" in \
         ;; \
 esac \
 ' 2>/dev/null
-OPTFLAG_RPC_HDR := $(OPTFLAG_RPC_HDR_CMD)
 
 # Set appropriate flags in clang v11, GCC v8 and Binutils as v2.34
 # (any language)
@@ -485,24 +478,7 @@ LDFLAGS := $(DFT_LDFLAGS_CMD)
 
 ## Make macros
 
-LIBS := $(BUILD_LIBRARY)
-
-#        if [ "$(ENABLE_BSDDB)" = "true" ]; then \
-#            printf "%s" "true"; \
-#        else \
-#            printf "%s" "false"; \
-#        fi \
-OPT_GETPW_ENABLED_CMD != sh -c '\
-case "$(ENABLE_GETPW)" in \
-    true) \
-        printf "%s" "true" \
-        ;; \
-    false|*) \
-        printf "%s" "false" \
-        ;; \
-esac \
-' 2>/dev/null
-OPT_GETPW_ENABLED := $(OPT_GETPW_ENABLED_CMD)
+LIBS := $(BUILD_LIBRARY_CMD)
 
 COMMON_OBJS :=
 PORTABLE_SHA2_INT_OBJ_CMD != sh -c '\
@@ -658,31 +634,32 @@ $(BUILDDIR):
 $(BUILDDIR)/portable:
 	mkdir -p "$(BUILDDIR)/portable"
 $(BUILDDIR)/authenticate.o: authenticate.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/auth_subr.o: auth_subr.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/bcrypt_int.o: bcrypt_int.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/blowfish.o: blowfish.c
 	$(CC) $(CFLAGS) \
-	  $(OPTFLAG_BLF) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+	  $(OPTFLAG_BLF_CMD) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) \
+	  -c $? -o $@
 $(BUILDDIR)/bcrypt_pbkdf.o: bcrypt_pbkdf.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/check_expire.o: check_expire.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/cryptutil.o: cryptutil.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/fparseln.o: fparseln.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/getnetgrent.o: getnetgrent.c
 	$(CC) $(CFLAGS) \
-	  $(OPTFLAG_BSDDB) $(OPTFLAG_YP) $(DFT_LIBFLAGS) -c $? -o $@
+	  $(OPTFLAG_BSDDB_CMD) $(OPTFLAG_YP_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/getpwent.o: getpwent.c
 	$(CC) $(CFLAGS) \
-	  $(OPTFLAG_BSDDB) $(OPTFLAG_YP) $(OPTFLAG_RPC_HDR) $(DFT_LIBFLAGS) \
-	  -c $? -o $@
+	  $(OPTFLAG_BSDDB_CMD) $(OPTFLAG_YP_CMD) $(OPTFLAG_RPC_HDR_CMD) \
+	  $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/login_cap.o: login_cap.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/yp_check_int.o: yp_check_int.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/ypexclude_int.o: ypexclude_int.c
@@ -690,9 +667,9 @@ $(BUILDDIR)/ypexclude_int.o: ypexclude_int.c
 $(BUILDDIR)/portable/arc4random_int.o: portable/arc4random_int.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/portable/bcrypt_int_ptb.o: portable/bcrypt_int_ptb.c
-	$(CC) $(CFLAGS) $(OPTFLAG_BLF) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_BLF_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/portable/getcap_int.o: portable/getcap_int.c
-	$(CC) $(CFLAGS) $(OPTFLAG_BSDDB) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_BSDDB_CMD) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/portable/passwd_int.o: portable/passwd_int.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/portable/pw_dup_int.o: portable/pw_dup_int.c
@@ -704,7 +681,7 @@ $(BUILDDIR)/portable/strtonum_int.o: portable/strtonum_int.c
 $(BUILDDIR)/portable/timingsafe_bcmp_int.o: portable/timingsafe_bcmp_int.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
 $(BUILDDIR)/libbsd4.so: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
-	if [ "$(BUILD_PORTABLE)" = "true" ]; then \
+	if [ "$(BUILD_PORTABLE_CMD)" = "true" ]; then \
 	    $(CC) $(LDFLAGS) $(DFT_LIBFLAGS) $(DFT_SHAREDLDFLAGS) \
 	      -o "$(BUILDDIR)/libbsd4.so" $? $(LNK_LDFLAGS); \
 	else \
@@ -713,7 +690,7 @@ $(BUILDDIR)/libbsd4.so: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
               $(LIBBSD4_OBJS) $(COMMON_OBJS) $(LNK_LDFLAGS); \
 	fi
 $(BUILDDIR)/libbsd4.a: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
-	if [ "$(BUILD_PORTABLE)" = "true" ]; then \
+	if [ "$(BUILD_PORTABLE_CMD)" = "true" ]; then \
 	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsd4.a" $?; \
 	else \
 	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsd4.a" \
