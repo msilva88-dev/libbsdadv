@@ -83,7 +83,7 @@ SHRDPERM ?= $(DIRPERM)
 USE_LIBC_WITH_BSDLIB ?= $(USE_LIBC_WITH_BSDLIB_CMD)
 VER ?= $(VER_MAJOR).$(VER_MINOR).$(VER_REV)
 VER_MAJOR ?= 1
-VER_MINOR ?= 85
+VER_MINOR ?= 0
 VER_REV ?= 0
 
 # Number of CPU threads for parallel compilation
