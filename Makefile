@@ -339,7 +339,15 @@ esac \
 ' 2>/dev/null
 
 # Compiler Flags for shared library
-DFT_LIBFLAGS := -fPIC
+DFT_LIBFLAGS_CMD != sh -c '\
+if [ "$(ENABLE_DYNAMIC)" != "true" ] \
+  || [ "$(ENABLE_STATIC)" = "true" ]; \
+then \
+    printf "%s" ""; \
+else \
+    printf "%s%s" "-f" "PIC"; \
+fi \
+' 2>/dev/null
 
 # Compiler Flags in clang v11 and GCC v8 (C family language)
 DFT_CFMLFLAGS_CMD != sh -c '\
@@ -634,58 +642,58 @@ $(BUILDDIR):
 $(BUILDDIR)/portable:
 	mkdir -p "$(BUILDDIR)/portable"
 $(BUILDDIR)/authenticate.o: authenticate.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/auth_subr.o: auth_subr.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/bcrypt_int.o: bcrypt_int.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/blowfish.o: blowfish.c
 	$(CC) $(CFLAGS) \
-	  $(OPTFLAG_BLF_CMD) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) \
+	  $(OPTFLAG_BLF_CMD) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) \
 	  -c $? -o $@
 $(BUILDDIR)/bcrypt_pbkdf.o: bcrypt_pbkdf.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/check_expire.o: check_expire.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/cryptutil.o: cryptutil.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/fparseln.o: fparseln.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/getnetgrent.o: getnetgrent.c
 	$(CC) $(CFLAGS) \
-	  $(OPTFLAG_BSDDB_CMD) $(OPTFLAG_YP_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	  $(OPTFLAG_BSDDB_CMD) $(OPTFLAG_YP_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/getpwent.o: getpwent.c
 	$(CC) $(CFLAGS) \
 	  $(OPTFLAG_BSDDB_CMD) $(OPTFLAG_YP_CMD) $(OPTFLAG_RPC_HDR_CMD) \
-	  $(DFT_LIBFLAGS) -c $? -o $@
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/login_cap.o: login_cap.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/yp_check_int.o: yp_check_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/ypexclude_int.o: ypexclude_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/arc4random_int.o: portable/arc4random_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/bcrypt_int_ptb.o: portable/bcrypt_int_ptb.c
-	$(CC) $(CFLAGS) $(OPTFLAG_BLF_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_BLF_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/getcap_int.o: portable/getcap_int.c
-	$(CC) $(CFLAGS) $(OPTFLAG_BSDDB_CMD) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(OPTFLAG_BSDDB_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/passwd_int.o: portable/passwd_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/pw_dup_int.o: portable/pw_dup_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/sha2_int.o: portable/sha2_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/strtonum_int.o: portable/strtonum_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/timingsafe_bcmp_int.o: portable/timingsafe_bcmp_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS) -c $? -o $@
+	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/libbsd4.so: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
 	if [ "$(BUILD_PORTABLE_CMD)" = "true" ]; then \
-	    $(CC) $(LDFLAGS) $(DFT_LIBFLAGS) $(DFT_SHAREDLDFLAGS) \
+	    $(CC) $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
 	      -o "$(BUILDDIR)/libbsd4.so" $? $(LNK_LDFLAGS); \
 	else \
-	    $(CC) $(LDFLAGS) $(DFT_LIBFLAGS) $(DFT_SHAREDLDFLAGS) \
+	    $(CC) $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
 	      -o "$(BUILDDIR)/libbsd4.so" \
               $(LIBBSD4_OBJS) $(COMMON_OBJS) $(LNK_LDFLAGS); \
 	fi
