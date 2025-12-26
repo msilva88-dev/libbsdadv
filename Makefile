@@ -64,6 +64,13 @@ MANFGRP ?= $(FILEGRP)
 MANFOWN ?= $(FILEOWN)
 MANFPERM ?= $(FILEPERM)
 MARCH ?= $(MARCH_CMD)
+PCDGRP ?= $(DIRGRP)
+PCDOWN ?= $(DIROWN)
+PCDPERM ?= $(DIRPERM)
+PCFGRP ?= $(FILEGRP)
+PCFOWN ?= $(FILEOWN)
+PCFPERM ?= $(FILEPERM)
+PKGCONFIGDIR ?= $(LIBDIR)/pkgconfig
 PREFIX ?= usr
 PFIXOWN ?= $(DIRGRP)
 PFIXGRP ?= $(DIROWN)
@@ -74,6 +81,10 @@ SHRDOWN ?= $(DIRGRP)
 SHRDGRP ?= $(DIROWN)
 SHRDPERM ?= $(DIRPERM)
 USE_LIBC_WITH_BSDLIB ?= $(USE_LIBC_WITH_BSDLIB_CMD)
+VER ?= $(VER_MAJOR).$(VER_MINOR).$(VER_REV)
+VER_MAJOR ?= 1
+VER_MINOR ?= 85
+VER_REV ?= 0
 
 # Number of CPU threads for parallel compilation
 CTHREADS_CMD != sh -c '\
@@ -632,9 +643,11 @@ LIBBSDADV_OBJS += $(BUILDDIR)/getnetgrent.o $(LIBBSDADV_GETPWENT_OBJ_CMD)
 LIBBSDADV_OBJS += $(BUILDDIR)/login_cap.o $(LIBBSDADV_YP_CHECK_INT_OBJ_CMD)
 LIBBSDADV_OBJS += $(LIBBSDADV_YPEXCLUDE_INT_OBJ_CMD)
 
+LIBBSDADV_PCS := $(BUILDDIR)/libbsdadv.pc
+
 ## build
 
-all: $(BUILDDIR) $(BUILDDIR)/portable $(LIBBSDADV_LIBS)
+all: $(BUILDDIR) $(BUILDDIR)/portable $(LIBBSDADV_LIBS) $(LIBBSDADV_PCS)
 
 $(BUILDDIR):
 	mkdir -p "$(BUILDDIR)"
@@ -700,10 +713,24 @@ $(BUILDDIR)/libbsdadv.so: $(LIBBSDADV_OBJS) $(PORTABLE_OBJS)
 	    "$(CC)" $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
 	      -o "$(BUILDDIR)/libbsdadv.so" $(LIBBSDADV_OBJS) $(LNK_LDFLAGS); \
 	fi
+$(BUILDDIR)/libbsdadv.pc: libbsdadv.pc.in
+	if [ "$(ENABLE_DYNAMIC)" = "true" ] \
+	  || [ "$(ENABLE_STATIC)" != "true" ]; \
+	then \
+	    _DYNAMIC=" -lbsdadv"; \
+	else \
+	    _DYNAMIC=""; \
+	fi; \
+	sed \
+	  -e "s|@DYNAMIC@|$${_DYNAMIC}|g" \
+	  -e "s|@LIBDIR@|/$(LIBDIR)|g" \
+	  -e "s|@INCLUDEDIR@|/$(INCLUDEDIR)|g" \
+	  -e "s|@VER@|$(VER)|g" \
+	  $? > $@
 
 ## Install
 
-install: install-hdr install-lib install-man
+install: install-hdr install-lib install-man install-pkgconfig
 
 ## Install headers
 
@@ -801,6 +828,16 @@ install-lib: $(LIBBSDADV_LIBS)
 	    chown "$(LIBFOWN):$(LIBFGRP)" \
 	      "$(DESTDIR)/$(LIBDIR)/$${FILE}"; \
 	done
+	if [ -f "$(DESTDIR)/$(LIBDIR)/libbsdadv.so" ]; then \
+	    ln -s libbsdadv.so \
+	      "$(DESTDIR)/$(LIBDIR)/libbsdadv.so.$(VER_MAJOR)"; \
+	    ln -s libbsdadv.so \
+	      "$(DESTDIR)/$(LIBDIR)/libbsdadv.so.$(VER)"; \
+	    chown "$(LIBFOWN):$(LIBFGRP)" \
+	      "$(DESTDIR)/$(LIBDIR)/libbsdadv.so.$(VER_MAJOR)"; \
+	    chown "$(LIBFOWN):$(LIBFGRP)" \
+	      "$(DESTDIR)/$(LIBDIR)/libbsdadv.so.$(VER)"; \
+	fi
 
 ## Install manuals
 
@@ -881,10 +918,56 @@ install-man: $(LIBBSDADV_MANS)
 	      "$(DESTDIR)/$(MANDIR)/man3/$${FILE}"; \
 	done
 
+# Install pkg-config files
+
+install-pkgconfig: $(LIBBSDADV_PCS)
+	([ -d "$(DESTDIR)/$(PREFIX)" ] || [ "$(DESTDIR)/$(PREFIX)" = "/" ]) \
+	  || mkdir -pm "$(PFIXPERM)" "$(DESTDIR)/$(PREFIX)"
+	([ -d "$(DESTDIR)/$(PKGCONFIGDIR)" ] \
+	  || [ "$(DESTDIR)/$(PKGCONFIGDIR)" = "/" ]) \
+	  || mkdir -pm "$(PCDPERM)" "$(DESTDIR)/$(PKGCONFIGDIR)"
+
+	OGDIR="$(DESTDIR)/$(PREFIX)"; \
+	OWNGRP=$$(ls -ld "$${OGDIR}" 2>/dev/null | awk '{print $$3, $$4}'); \
+	set -- "$${OWNGRP}"; \
+	[ "$$1" = "$(PFIXOWN)" ] \
+	  || chown "$(PFIXOWN)" "$(DESTDIR)/$(PREFIX)"; \
+	[ "$$2" = "$(PFIXGRP)" ] \
+	  || chgrp "$(PFIXGRP)" "$(DESTDIR)/$(PREFIX)"
+
+	if [ "$(DIRPGRP)" = "true" ]; then \
+	    LSPERMS="ls -ld \"$(DESTDIR)/$(PREFIX)\" 2>/dev/null"; \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(PREFIX)"; \
+	fi
+
+	OGDIR="$(DESTDIR)/$(PKGCONFIGDIR)"; \
+	OWNGRP=$$(ls -ld "$${OGDIR}" 2>/dev/null | awk '{print $$3, $$4}'); \
+	set -- "$${OWNGRP}"; \
+	[ "$$1" = "$(PCDOWN)" ] \
+	  || chown "$(PCDOWN)" "$(DESTDIR)/$(PKGCONFIGDIR)"; \
+	[ "$$2" = "$(PCDGRP)" ] \
+	  || chgrp "$(PCDGRP)" "$(DESTDIR)/$(PKGCONFIGDIR)"
+
+	if [ "$(DIRPGRP)" = "true" ]; then \
+	    LSPERMS="ls -ld \"$(DESTDIR)/$(PKGCONFIGDIR)\" 2>/dev/null"; \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(PKGCONFIGDIR)"; \
+	fi
+
+	cp -p $(LIBBSDADV_PCS) "$(DESTDIR)/$(PKGCONFIGDIR)"
+	for FILE in $$(ls $(LIBBSDADV_PCS) | xargs -n1 basename); do \
+	    chmod "$(PCFPERM)" \
+	      "$(DESTDIR)/$(PKGCONFIGDIR)/$${FILE}"; \
+	    chown "$(PCFOWN):$(PCFGRP)" \
+	      "$(DESTDIR)/$(PKGCONFIGDIR)/$${FILE}"; \
+	done
+
 ## Clean
 
 clean:
 	rm -frv "$(BUILDDIR)"
 
-.PHONY: all clean install install-hdr install-lib install-man \
-  $(LIBBSDADV_HDRS) $(LIBBSDADV_LIBS) $(LIBBSDADV_MANS)
+.PHONY: all clean \
+  install install-hdr install-lib install-man install-pkgconfig \
+  $(LIBBSDADV_HDRS) $(LIBBSDADV_LIBS) $(LIBBSDADV_MANS) $(LIBBSDADV_PCS)

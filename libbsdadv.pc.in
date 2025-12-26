@@ -1,0 +1,10 @@
+# libbsdadv pkg-config source file
+
+libdir=@LIBDIR@
+includedir=@INCLUDEDIR@
+
+Name: libbsdadv
+Description: BSD libc compatibility library containing code under the BSD advertising clause
+Version: @VER@
+Libs: -L${libdir}@DYNAMIC@
+Cflags: -I${includedir}
