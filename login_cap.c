@@ -734,7 +734,7 @@ setuserpath(login_cap_t *lc, const struct passwd *pwd)
 			/* check for escaped whitespace */
 			if (*(op + 1) == ' ' || *(op + 1) == '\t')
 				*np++ = *op++;
-			FALLTHROUGH_A
+			FALLTHROUGH_A;
 		default:
 			*np++ = *op++;
 			break;

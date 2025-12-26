@@ -39,7 +39,7 @@
 	 * No trailing ";" after this macro
 	 * to prevent Clang's [-Wextra-semi] warning.
 	 */
-#define FALLTHROUGH_A __attribute__((__fallthrough__));
+#define FALLTHROUGH_A __attribute__((__fallthrough__))
 #define HIDDEN_A __attribute__((__visibility__("hidden")))
 #define UNUSED_A __attribute__((__unused__))
 #else
