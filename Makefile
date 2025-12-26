@@ -32,9 +32,9 @@ DIRPERM ?= 0755
 DIRPGRP ?= false
 ENABLE_BLF ?= false
 ENABLE_BSDDB ?= false
+ENABLE_DYNAMIC ?= false
 ENABLE_GETPW ?= false
 ENABLE_SHARED ?= true
-ENABLE_DYNAMIC ?= false
 ENABLE_YP ?= false
 FILEGRP ?= root
 FILEOWN ?= root
@@ -94,8 +94,8 @@ case "$(COS_CMD)" in \
         printf "%s-pc-%s" "$(CARCH)" "hyperbolabsd" \
         ;; \
     *Linux|*) \
-        _G=$(ldd --version 2>&1 | head -n 1 | cut -d"(" -f2 | cut -d")" -f1) \
-        if [ "${_G}" = "GNU libc" ]; then \
+        _=$$(ldd --version 2>&1 | head -n 1 | cut -d"(" -f2 | cut -d")" -f1) \
+        if [ "$${_}" = "GNU libc" ]; then \
             printf "%s-pc-%s" "$(CARCH)" "linux-gnu"; \
         else \
             printf "%s-pc-%s" "$(CARCH)" "linux-musl"; \
@@ -160,7 +160,7 @@ esac \
 ' 2>/dev/null
 
 # Target library flags
-BUILD_LIBRARY_CMD != sh -c '\
+BUILD_LIBBSDADV_CMD != sh -c '\
 _DYNAMIC=""; \
 _STATIC=""; \
 _SP=""; \
@@ -486,9 +486,72 @@ LDFLAGS := $(DFT_LDFLAGS_CMD)
 
 ## Make macros
 
-LIBS := $(BUILD_LIBRARY_CMD)
+LIBBSDADV_BLF_HDR_CMD != sh -c '\
+case "$(ENABLE_BLF)" in \
+    true) \
+        printf "%s" "blf.h" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_PWD_HDR_CMD != sh -c '\
+case "$(ENABLE_GETPW)" in \
+    true) \
+        case "$(ENABLE_BSDDB)" in \
+            true) \
+                printf "%s" "pwd_bsdadv.h" \
+                ;; \
+            false|*) \
+                printf "%s" "pwd_bsdadv_without_bsddb.h" \
+                ;; \
+        esac \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_UTIL_HDR_CMD != sh -c '\
+case "$(ENABLE_BLF)" in \
+    true) \
+        printf "%s" "util_bsdadv_with_blf.h" \
+        ;; \
+    false|*) \
+        printf "%s" "util_bsdadv.h" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_HDRS := $(LIBBSDADV_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
+LIBBSDADV_HDRS += $(LIBBSDADV_PWD_HDR_CMD) unistd_bsdadv.h $(LIBBSDADV_UTIL_HDR_CMD)
 
-COMMON_OBJS :=
+LIBBSDADV_LIBS := $(BUILD_LIBBSDADV_CMD)
+
+LIBBSDADV_BLF_MAN_CMD != sh -c '\
+case "$(ENABLE_BLF)" in \
+    true) \
+        printf "%s" "bcrypt_pbkdf.3 blowfish.3" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_GETPW_MAN_CMD != sh -c '\
+case "$(ENABLE_GETPW)" in \
+    true) \
+        printf "%s" "getpwent.3 getpwnam.3" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_MANS := authenticate.3 auth_subr.3 $(LIBBSDADV_BLF_MAN_CMD)
+LIBBSDADV_MANS += check_expire.3 crypt_checkpass.3 fparseln.3 getnetgrent.3
+LIBBSDADV_MANS += $(LIBBSDADV_GETPW_MAN_CMD) login_cap.3
+
 PORTABLE_SHA2_INT_OBJ_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
@@ -569,145 +632,80 @@ LIBBSDADV_OBJS += $(BUILDDIR)/getnetgrent.o $(LIBBSDADV_GETPWENT_OBJ_CMD)
 LIBBSDADV_OBJS += $(BUILDDIR)/login_cap.o $(LIBBSDADV_YP_CHECK_INT_OBJ_CMD)
 LIBBSDADV_OBJS += $(LIBBSDADV_YPEXCLUDE_INT_OBJ_CMD)
 
-LIBBSDADV_BLF_HDR_CMD != sh -c '\
-case "$(ENABLE_BLF)" in \
-    true) \
-        printf "%s" "blf.h" \
-        ;; \
-    false|*) \
-        printf "%s" "" \
-        ;; \
-esac \
-' 2>/dev/null
-LIBBSDADV_PWD_HDR_CMD != sh -c '\
-case "$(ENABLE_GETPW)" in \
-    true) \
-        case "$(ENABLE_BSDDB)" in \
-            true) \
-                printf "%s" "pwd_bsdadv.h" \
-                ;; \
-            false|*) \
-                printf "%s" "pwd_bsdadv_without_bsddb.h" \
-                ;; \
-        esac \
-        ;; \
-    false|*) \
-        printf "%s" "" \
-        ;; \
-esac \
-' 2>/dev/null
-LIBBSDADV_UTIL_HDR_CMD != sh -c '\
-case "$(ENABLE_BLF)" in \
-    true) \
-        printf "%s" "util_bsdadv_with_blf.h" \
-        ;; \
-    false|*) \
-        printf "%s" "util_bsdadv.h" \
-        ;; \
-esac \
-' 2>/dev/null
-LIBBSDADV_HDRS := $(LIBBSDADV_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
-LIBBSDADV_HDRS += $(LIBBSDADV_PWD_HDR_CMD) unistd_bsdadv.h $(LIBBSDADV_UTIL_HDR_CMD)
-
-LIBBSDADV_BLF_MAN_CMD != sh -c '\
-case "$(ENABLE_BLF)" in \
-    true) \
-        printf "%s" "bcrypt_pbkdf.3 blowfish.3" \
-        ;; \
-    false|*) \
-        printf "%s" "" \
-        ;; \
-esac \
-' 2>/dev/null
-LIBBSDADV_GETPW_MAN_CMD != sh -c '\
-case "$(ENABLE_GETPW)" in \
-    true) \
-        printf "%s" "getpwent.3 getpwnam.3" \
-        ;; \
-    false|*) \
-        printf "%s" "" \
-        ;; \
-esac \
-' 2>/dev/null
-LIBBSDADV_MANS := authenticate.3 auth_subr.3 $(LIBBSDADV_BLF_MAN_CMD)
-LIBBSDADV_MANS += check_expire.3 crypt_checkpass.3 fparseln.3 getnetgrent.3
-LIBBSDADV_MANS += $(LIBBSDADV_GETPW_MAN_CMD) login_cap.3
-
 ## build
 
-all: $(BUILDDIR) $(BUILDDIR)/portable $(LIBS)
+all: $(BUILDDIR) $(BUILDDIR)/portable $(LIBBSDADV_LIBS)
 
 $(BUILDDIR):
 	mkdir -p "$(BUILDDIR)"
 $(BUILDDIR)/portable:
 	mkdir -p "$(BUILDDIR)/portable"
 $(BUILDDIR)/authenticate.o: authenticate.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/auth_subr.o: auth_subr.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/bcrypt_int.o: bcrypt_int.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/blowfish.o: blowfish.c
-	$(CC) $(CFLAGS) \
-	  $(OPTFLAG_BLF_CMD) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) \
-	  -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_BLF_CMD) $(OPTFLAG_LIBCBSD_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/bcrypt_pbkdf.o: bcrypt_pbkdf.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/check_expire.o: check_expire.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/cryptutil.o: cryptutil.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/fparseln.o: fparseln.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/getnetgrent.o: getnetgrent.c
-	$(CC) $(CFLAGS) \
-	  $(OPTFLAG_BSDDB_CMD) $(OPTFLAG_YP_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_BSDDB_CMD) $(OPTFLAG_YP_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/getpwent.o: getpwent.c
-	$(CC) $(CFLAGS) \
+	"$(CC)" $(CFLAGS) \
 	  $(OPTFLAG_BSDDB_CMD) $(OPTFLAG_YP_CMD) $(OPTFLAG_RPC_HDR_CMD) \
 	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/login_cap.o: login_cap.c
-	$(CC) $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/yp_check_int.o: yp_check_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/ypexclude_int.o: ypexclude_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/arc4random_int.o: portable/arc4random_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/bcrypt_int_ptb.o: portable/bcrypt_int_ptb.c
-	$(CC) $(CFLAGS) $(OPTFLAG_BLF_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_BLF_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/getcap_int.o: portable/getcap_int.c
-	$(CC) $(CFLAGS) $(OPTFLAG_BSDDB_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_BSDDB_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/passwd_int.o: portable/passwd_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/pw_dup_int.o: portable/pw_dup_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/sha2_int.o: portable/sha2_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/strtonum_int.o: portable/strtonum_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/timingsafe_bcmp_int.o: portable/timingsafe_bcmp_int.c
-	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
-$(BUILDDIR)/libbsdadv.so: $(LIBBSDADV_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+$(BUILDDIR)/libbsdadv.a: $(LIBBSDADV_OBJS) $(PORTABLE_OBJS)
 	if [ "$(BUILD_PORTABLE_CMD)" = "true" ]; then \
-	    $(CC) $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
+	    "$(AR)" $(ARFLAGS) "$(BUILDDIR)/libbsdadv.a" $?; \
+	else \
+	    "$(AR)" $(ARFLAGS) "$(BUILDDIR)/libbsdadv.a" $(LIBBSDADV_OBJS); \
+	fi
+$(BUILDDIR)/libbsdadv.so: $(LIBBSDADV_OBJS) $(PORTABLE_OBJS)
+	if [ "$(BUILD_PORTABLE_CMD)" = "true" ]; then \
+	    "$(CC)" $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
 	      -o "$(BUILDDIR)/libbsdadv.so" $? $(LNK_LDFLAGS); \
 	else \
-	    $(CC) $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
-	      -o "$(BUILDDIR)/libbsdadv.so" \
-              $(LIBBSDADV_OBJS) $(COMMON_OBJS) $(LNK_LDFLAGS); \
-	fi
-$(BUILDDIR)/libbsdadv.a: $(LIBBSDADV_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
-	if [ "$(BUILD_PORTABLE_CMD)" = "true" ]; then \
-	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsdadv.a" $?; \
-	else \
-	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsdadv.a" \
-              $(LIBBSDADV_OBJS) $(COMMON_OBJS); \
+	    "$(CC)" $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
+	      -o "$(BUILDDIR)/libbsdadv.so" $(LIBBSDADV_OBJS) $(LNK_LDFLAGS); \
 	fi
 
 ## Install
 
 install: install-hdr install-lib install-man
+
+## Install headers
 
 install-hdr: $(LIBBSDADV_HDRS)
 	([ -d "$(DESTDIR)/$(PREFIX)" ] || [ "$(DESTDIR)/$(PREFIX)" = "/" ]) \
@@ -728,7 +726,7 @@ install-hdr: $(LIBBSDADV_HDRS)
 
 	if [ "$(DIRPGRP)" = "true" ]; then \
 	    LSPERMS="ls -ld \"$(DESTDIR)/$(PREFIX)\" 2>/dev/null"; \
-	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(PREFIX)"; \
 	fi
 
@@ -742,7 +740,7 @@ install-hdr: $(LIBBSDADV_HDRS)
 
 	if [ "$(DIRPGRP)" = "true" ]; then \
 	    LSPERMS="ls -ld \"$(DESTDIR)/$(SHAREDIR)\" 2>/dev/null"; \
-	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(SHAREDIR)"; \
 	fi
 
@@ -760,7 +758,9 @@ install-hdr: $(LIBBSDADV_HDRS)
 	  || mv "$(DESTDIR)/$(INCLUDEDIR)/util_bsdadv_with_blf.h" \
 	  "$(DESTDIR)/$(INCLUDEDIR)/util_bsdadv.h"
 
-install-lib:
+## Install libraries
+
+install-lib: $(LIBBSDADV_LIBS)
 	([ -d "$(DESTDIR)/$(PREFIX)" ] || [ "$(DESTDIR)/$(PREFIX)" = "/" ]) \
 	  || mkdir -pm "$(PFIXPERM)" "$(DESTDIR)/$(PREFIX)"
 	([ -d "$(DESTDIR)/$(LIBDIR)" ] || [ "$(DESTDIR)/$(LIBDIR)" = "/" ]) \
@@ -776,7 +776,7 @@ install-lib:
 
 	if [ "$(DIRPGRP)" = "true" ]; then \
 	    LSPERMS="ls -ld \"$(DESTDIR)/$(PREFIX)\" 2>/dev/null"; \
-	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(PREFIX)"; \
 	fi
 
@@ -790,19 +790,19 @@ install-lib:
 
 	if [ "$(DIRPGRP)" = "true" ]; then \
 	    LSPERMS="ls -ld \"$(DESTDIR)/$(LIBDIR)\" 2>/dev/null"; \
-	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(LIBDIR)"; \
 	fi
 
-	cp -p $(LIBS) "$(DESTDIR)/$(LIBDIR)"
-	for FILE in $(ls "$(BUILDDIR)/libbsdadv."* | xargs -n1 basename); do \
+	cp -p $(LIBBSDADV_LIBS) "$(DESTDIR)/$(LIBDIR)"
+	for FILE in $$(ls $(LIBBSDADV_LIBS) | xargs -n1 basename); do \
 	    chmod "$(LIBFPERM)" \
 	      "$(DESTDIR)/$(LIBDIR)/$${FILE}"; \
 	    chown "$(LIBFOWN):$(LIBFGRP)" \
 	      "$(DESTDIR)/$(LIBDIR)/$${FILE}"; \
 	done
 
-## Install Manuals
+## Install manuals
 
 install-man: $(LIBBSDADV_MANS)
 	([ -d "$(DESTDIR)/$(PREFIX)" ] || [ "$(DESTDIR)/$(PREFIX)" = "/" ]) \
@@ -827,7 +827,7 @@ install-man: $(LIBBSDADV_MANS)
 
 	if [ "$(DIRPGRP)" = "true" ]; then \
 	    LSPERMS="ls -ld \"$(DESTDIR)/$(PREFIX)\" 2>/dev/null"; \
-	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(PREFIX)"; \
 	fi
 
@@ -841,7 +841,7 @@ install-man: $(LIBBSDADV_MANS)
 
 	if [ "$(DIRPGRP)" = "true" ]; then \
 	    LSPERMS="ls -ld \"$(DESTDIR)/$(SHAREDIR)\" 2>/dev/null"; \
-	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(SHAREDIR)"; \
 	fi
 
@@ -855,7 +855,7 @@ install-man: $(LIBBSDADV_MANS)
 
 	if [ "$(DIRPGRP)" = "true" ]; then \
 	    LSPERMS="ls -ld \"$(DESTDIR)/$(MANDIR)\" 2>/dev/null"; \
-	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(MANDIR)"; \
 	fi
 
@@ -869,7 +869,7 @@ install-man: $(LIBBSDADV_MANS)
 
 	if [ "$(DIRPGRP)" = "true" ]; then \
 	    LSPERMS="ls -ld \"$(DESTDIR)/$(MANDIR)/man3\" 2>/dev/null"; \
-	    PERMS=$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
+	    PERMS=$$("$${LSPERMS}" | awk '{print $1}' | cut -c6); \
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(MANDIR)/man3"; \
 	fi
 
@@ -886,4 +886,5 @@ install-man: $(LIBBSDADV_MANS)
 clean:
 	rm -frv "$(BUILDDIR)"
 
-.PHONY: all clean install install-hdr install-lib install-man $(LIBS)
+.PHONY: all clean install install-hdr install-lib install-man \
+  $(LIBBSDADV_HDRS) $(LIBBSDADV_LIBS) $(LIBBSDADV_MANS)
