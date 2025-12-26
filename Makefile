@@ -584,10 +584,10 @@ case "$(ENABLE_GETPW)" in \
     true) \
         case "$(ENABLE_BSDDB)" in \
             true) \
-                printf "%s" "pwd_bsd4.h" \
+                printf "%s" "pwd_bsdadv.h" \
                 ;; \
             false|*) \
-                printf "%s" "pwd_bsd4_without_bsddb.h" \
+                printf "%s" "pwd_bsdadv_without_bsddb.h" \
                 ;; \
         esac \
         ;; \
@@ -599,15 +599,15 @@ esac \
 LIBBSDADV_UTIL_HDR_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
-        printf "%s" "util_bsd4_with_blf.h" \
+        printf "%s" "util_bsdadv_with_blf.h" \
         ;; \
     false|*) \
-        printf "%s" "util_bsd4.h" \
+        printf "%s" "util_bsdadv.h" \
         ;; \
 esac \
 ' 2>/dev/null
 LIBBSDADV_HDRS := $(LIBBSDADV_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
-LIBBSDADV_HDRS += $(LIBBSDADV_PWD_HDR_CMD) unistd_bsd4.h $(LIBBSDADV_UTIL_HDR_CMD)
+LIBBSDADV_HDRS += $(LIBBSDADV_PWD_HDR_CMD) unistd_bsdadv.h $(LIBBSDADV_UTIL_HDR_CMD)
 
 LIBBSDADV_BLF_MAN_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
@@ -753,12 +753,12 @@ install-hdr: $(LIBBSDADV_HDRS)
 	    chown "$(INCFOWN):$(INCFGRP)" \
 	      "$(DESTDIR)/$(INCLUDEDIR)/$${FILE}"; \
 	done
-	[ ! -f "$(DESTDIR)/$(INCLUDEDIR)/pwd_bsd4_without_bsddb.h" ] \
-	    || mv "$(DESTDIR)/$(INCLUDEDIR)/pwd_bsd4_without_bsddb.h" \
-	    "$(DESTDIR)/$(INCLUDEDIR)/pwd_bsd4.h"
-	[ ! -f "$(DESTDIR)/$(INCLUDEDIR)/util_bsd4_with_blf.h" ] \
-	    || mv "$(DESTDIR)/$(INCLUDEDIR)/util_bsd4_with_blf.h" \
-	    "$(DESTDIR)/$(INCLUDEDIR)/util_bsd4.h"
+	[ ! -f "$(DESTDIR)/$(INCLUDEDIR)/pwd_bsdadv_without_bsddb.h" ] \
+	  || mv "$(DESTDIR)/$(INCLUDEDIR)/pwd_bsdadv_without_bsddb.h" \
+	  "$(DESTDIR)/$(INCLUDEDIR)/pwd_bsdadv.h"
+	[ ! -f "$(DESTDIR)/$(INCLUDEDIR)/util_bsdadv_with_blf.h" ] \
+	  || mv "$(DESTDIR)/$(INCLUDEDIR)/util_bsdadv_with_blf.h" \
+	  "$(DESTDIR)/$(INCLUDEDIR)/util_bsdadv.h"
 
 install-lib:
 	([ -d "$(DESTDIR)/$(PREFIX)" ] || [ "$(DESTDIR)/$(PREFIX)" = "/" ]) \

@@ -33,10 +33,10 @@
  * SUCH DAMAGE.
  */
 
-/* util_bsd4 header from OpenBSD 7.0 source code: lib/libutil/util.h */
+/* util_bsdadv header from OpenBSD 7.0 source code: lib/libutil/util.h */
 
-#ifndef _UTIL_BSD4_H
-#define _UTIL_BSD4_H
+#ifndef _UTIL_BSDADV_H
+#define _UTIL_BSDADV_H
 
 #ifdef __cplusplus
 extern "C" {

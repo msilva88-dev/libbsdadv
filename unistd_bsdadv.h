@@ -15,8 +15,8 @@
  * <https://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-#ifndef _UNISTD_BSD4_H
-#define _UNISTD_BSD4_H
+#ifndef _UNISTD_BSDADV_H
+#define _UNISTD_BSDADV_H
 
 #ifdef __cplusplus
 extern "C" {

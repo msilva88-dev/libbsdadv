@@ -30,7 +30,7 @@
 #include "login_cap.h"
 #include "pwd_int.h"
 #include "stdlib_int.h"
-#include "unistd_bsd4.h"
+#include "unistd_bsdadv.h"
 
 DEF_WEAK(crypt_checkpass);
 int

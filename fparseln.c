@@ -41,7 +41,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "util_bsd4.h"
+#include "util_bsdadv.h"
 
 static int isescaped(const char *, const char *, int);
 

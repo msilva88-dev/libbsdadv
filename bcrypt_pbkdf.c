@@ -37,7 +37,7 @@
 #include "portable/stdlib_int.h"
 #include "portable/sha2_int.h"
 #endif
-#include "util_bsd4_with_blf.h"
+#include "util_bsdadv_with_blf.h"
 
 #define	MINIMUM(a,b) (((a) < (b)) ? (a) : (b))
 

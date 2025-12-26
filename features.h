@@ -34,7 +34,7 @@
 #ifdef __GNUC__
 #define DEF_WEAK(x) \
 	extern __typeof(x) x __attribute__((__weak__)); \
-	extern __typeof(x) __bsd4_##x __attribute__((__alias__(#x)))
+	extern __typeof(x) __bsdadv_##x __attribute__((__alias__(#x)))
 	/*
 	 * No trailing ";" after this macro
 	 * to prevent Clang's [-Wextra-semi] warning.
