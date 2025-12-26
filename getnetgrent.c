@@ -51,6 +51,7 @@
 #include <stdlib.h>
 #ifdef BSDDB
 #include <bsddb.h>
+#include <limits.h>
 #endif
 #ifdef YP
 #include <limits.h>
@@ -271,7 +272,11 @@ badhost:
  * in *line; returns 1 if key was found, 0 otherwise
  */
 static int
+#ifdef YP
 lookup(const char *ypdom, char *name, char **line, int bywhat)
+#else
+lookup(const char *ypdom UNUSED_A, char *name, char **line, int bywhat)
+#endif
 {
 #ifdef BSDDB
 	int ret;
