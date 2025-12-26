@@ -338,6 +338,8 @@ lookup(const char *ypdom UNUSED_A, char *name, char **line, int bywhat)
 		if (yp_match(ypdom, map, name, strlen(name), line, &i) == 0)
 			return 1;
 	}
+#else
+	(void)ypdom;
 #endif
 
 	return 0;
