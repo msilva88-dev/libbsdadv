@@ -13,78 +13,78 @@
 ## Settings
 
 # Configurations
-AR ?= $(AR_CMD)
-ARFLAGS ?= rcs
-BUILDDIR ?= build
-CARCH ?= $(CARCH_CMD)
-CBUILD ?= $(CBUILD_CMD)
-CHOST ?= $(CBUILD)
-CTHREADS ?= $(CTHREADS_CMD)
-CPPFLAGS ?= $(CPPFLAGS_CMD)
-CC ?= $(CC_CMD)
-CFLAGS ?= $(CFLAGS_CMD)
-CVER ?= gnu17
-DEBUG ?= false
-DESTDIR ?=
-DIRGRP ?= root
-DIROWN ?= root
-DIRPERM ?= 0755
-DIRPGRP ?= false
-ENABLE_BLF ?= false
-ENABLE_BSDDB ?= false
-ENABLE_DYNAMIC ?= false
-ENABLE_GETPW ?= false
-ENABLE_SHARED ?= true
-ENABLE_YP ?= false
-FILEGRP ?= root
-FILEOWN ?= root
-FILEPERM ?= 0644
-INCLUDEDIR ?= $(PREFIX)/include
-INCDGRP ?= $(DIRGRP)
-INCDOWN ?= $(DIROWN)
-INCDPERM ?= $(DIRPERM)
-INCFGRP ?= $(FILEGRP)
-INCFOWN ?= $(FILEOWN)
-INCFPERM ?= $(FILEPERM)
-LD ?= $(LD_CMD)
-LDHSTYLE ?= both
-LDHSTYLE_LEG ?= gnu
-LIBDIR ?= lib
-LIBDGRP ?= $(DIRGRP)
-LIBDOWN ?= $(DIROWN)
-LIBDPERM ?= $(DIRPERM)
-LIBFGRP ?= $(FILEGRP)
-LIBFOWN ?= $(FILEOWN)
-LIBFPERM ?= $(FILEPERM)
-MANDIR ?= $(SHAREDIR)/man
-MANDGRP ?= $(DIRGRP)
-MANDOWN ?= $(DIROWN)
-MANDPERM ?= $(DIRPERM)
-MANFGRP ?= $(FILEGRP)
-MANFOWN ?= $(FILEOWN)
-MANFPERM ?= $(FILEPERM)
-MARCH ?= $(MARCH_CMD)
-PCDGRP ?= $(DIRGRP)
-PCDOWN ?= $(DIROWN)
-PCDPERM ?= $(DIRPERM)
-PCFGRP ?= $(FILEGRP)
-PCFOWN ?= $(FILEOWN)
-PCFPERM ?= $(FILEPERM)
-PKGCONFIGDIR ?= $(LIBDIR)/pkgconfig
-PREFIX ?= usr
-PFIXOWN ?= $(DIRGRP)
-PFIXGRP ?= $(DIROWN)
-PFIXPERM ?= $(DIRPERM)
-PKG_CONFIG ?= $(PKG_CONFIG_CMD)
-SHAREDIR ?= $(PREFIX)/share
-SHRDOWN ?= $(DIRGRP)
-SHRDGRP ?= $(DIROWN)
-SHRDPERM ?= $(DIRPERM)
-USE_LIBC_WITH_BSDLIB ?= $(USE_LIBC_WITH_BSDLIB_CMD)
-VER ?= $(VER_MAJOR).$(VER_MINOR).$(VER_REV)
-VER_MAJOR ?= 1
-VER_MINOR ?= 0
-VER_REV ?= 0
+AR = $(AR_CMD)
+ARFLAGS = rcs
+BUILDDIR = build
+CARCH = $(CARCH_CMD)
+CBUILD = $(CBUILD_CMD)
+CHOST = $(CBUILD)
+CTHREADS = $(CTHREADS_CMD)
+CPPFLAGS = $(CPPFLAGS_CMD)
+CC = $(CC_CMD)
+CFLAGS = $(CFLAGS_CMD)
+CVER = gnu17
+DEBUG = false
+DESTDIR =
+DIRGRP = root
+DIROWN = root
+DIRPERM = 0755
+DIRPGRP = false
+ENABLE_BLF = false
+ENABLE_BSDDB = false
+ENABLE_DYNAMIC = false
+ENABLE_GETPW = false
+ENABLE_STATIC = false
+ENABLE_YP = false
+FILEGRP = root
+FILEOWN = root
+FILEPERM = 0644
+INCLUDEDIR = $(PREFIX)/include
+INCDGRP = $(DIRGRP)
+INCDOWN = $(DIROWN)
+INCDPERM = $(DIRPERM)
+INCFGRP = $(FILEGRP)
+INCFOWN = $(FILEOWN)
+INCFPERM = $(FILEPERM)
+LD = $(LD_CMD)
+LDHSTYLE = both
+LDHSTYLE_LEG = gnu
+LIBDIR = lib
+LIBDGRP = $(DIRGRP)
+LIBDOWN = $(DIROWN)
+LIBDPERM = $(DIRPERM)
+LIBFGRP = $(FILEGRP)
+LIBFOWN = $(FILEOWN)
+LIBFPERM = $(FILEPERM)
+MANDIR = $(SHAREDIR)/man
+MANDGRP = $(DIRGRP)
+MANDOWN = $(DIROWN)
+MANDPERM = $(DIRPERM)
+MANFGRP = $(FILEGRP)
+MANFOWN = $(FILEOWN)
+MANFPERM = $(FILEPERM)
+MARCH = $(MARCH_CMD)
+PCDGRP = $(DIRGRP)
+PCDOWN = $(DIROWN)
+PCDPERM = $(DIRPERM)
+PCFGRP = $(FILEGRP)
+PCFOWN = $(FILEOWN)
+PCFPERM = $(FILEPERM)
+PKGCONFIGDIR = $(LIBDIR)/pkgconfig
+PREFIX = usr
+PFIXOWN = $(DIRGRP)
+PFIXGRP = $(DIROWN)
+PFIXPERM = $(DIRPERM)
+PKG_CONFIG = $(PKG_CONFIG_CMD)
+SHAREDIR = $(PREFIX)/share
+SHRDOWN = $(DIRGRP)
+SHRDGRP = $(DIROWN)
+SHRDPERM = $(DIRPERM)
+USE_LIBC_WITH_BSDLIB = $(USE_LIBC_WITH_BSDLIB_CMD)
+VER = $(VER_MAJOR).$(VER_MINOR).$(VER_REV)
+VER_MAJOR = 1
+VER_MINOR = 0
+VER_REV = 0
 
 # Number of CPU threads for parallel compilation
 CTHREADS_CMD != sh -c '\
@@ -210,7 +210,8 @@ LD_CMD != printf "%s" "$(LD_PATH_CMD)" | sed "s|.*/||" 2>/dev/null
 PKG_CONFIG_PATH_CMD != sh -c '\
 command -v pkg-config 2>/dev/null || printf "%s" "pkg-config" \
 ' 2>/dev/null
-PKG_CONFIG_CMD != printf "%s" "$(PKG_CONFIG_PATH_CMD)" | sed "s|.*/||" 2>/dev/null
+PKG_CONFIG_CMD != printf "%s" "$(PKG_CONFIG_PATH_CMD)" \
+  | sed "s|.*/||" 2>/dev/null
 
 
 ## Compiler
@@ -351,12 +352,12 @@ esac \
 
 # Compiler Flags for shared library
 DFT_LIBFLAGS_CMD != sh -c '\
-if [ "$(ENABLE_DYNAMIC)" != "true" ] \
-  || [ "$(ENABLE_STATIC)" = "true" ]; \
+if [ "$(ENABLE_DYNAMIC)" = "true" ] \
+  || [ "$(ENABLE_STATIC)" != "true" ]; \
 then \
-    printf "%s" ""; \
-else \
     printf "%s%s" "-f" "PIC"; \
+else \
+    printf "%s" ""; \
 fi \
 ' 2>/dev/null
 
@@ -477,6 +478,16 @@ esac \
 ' 2>/dev/null
 
 # Linker Flags for optional libraries
+LNK_LDFLAG_BSDDB_CMD != sh -c '\
+case "$(ENABLE_BSDDB)" in \
+    true) \
+        printf "%s%s" "-l" "bsddb" \
+        ;; \
+    false|*) \
+        printf "%s%s" "" "" \
+        ;; \
+esac \
+' 2>/dev/null
 LNK_LDFLAG_YP_CMD != sh -c '\
 case "$(ENABLE_YP)" in \
     true) \
@@ -487,7 +498,7 @@ case "$(ENABLE_YP)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LNK_LDFLAGS := $(LNK_LDFLAG_YP_CMD)
+LNK_LDFLAGS := $(LNK_LDFLAG_BSDDB_CMD) $(LNK_LDFLAG_YP_CMD)
 
 # Linker Flags for shared code
 DFT_SHAREDLDFLAGS := -shared
@@ -535,7 +546,8 @@ case "$(ENABLE_BLF)" in \
 esac \
 ' 2>/dev/null
 LIBBSDADV_HDRS := $(LIBBSDADV_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
-LIBBSDADV_HDRS += $(LIBBSDADV_PWD_HDR_CMD) unistd_bsdadv.h $(LIBBSDADV_UTIL_HDR_CMD)
+LIBBSDADV_HDRS += $(LIBBSDADV_PWD_HDR_CMD) unistd_bsdadv.h
+LIBBSDADV_HDRS += $(LIBBSDADV_UTIL_HDR_CMD)
 
 LIBBSDADV_LIBS := $(BUILD_LIBBSDADV_CMD)
 
@@ -654,20 +666,26 @@ $(BUILDDIR):
 $(BUILDDIR)/portable:
 	mkdir -p "$(BUILDDIR)/portable"
 $(BUILDDIR)/authenticate.o: authenticate.c
-	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/auth_subr.o: auth_subr.c
-	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/bcrypt_int.o: bcrypt_int.c
-	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/blowfish.o: blowfish.c
 	"$(CC)" $(CFLAGS) $(OPTFLAG_BLF_CMD) $(OPTFLAG_LIBCBSD_CMD) \
 	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/bcrypt_pbkdf.o: bcrypt_pbkdf.c
-	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/check_expire.o: check_expire.c
-	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/cryptutil.o: cryptutil.c
-	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/fparseln.o: fparseln.c
 	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/getnetgrent.o: getnetgrent.c
@@ -678,7 +696,8 @@ $(BUILDDIR)/getpwent.o: getpwent.c
 	  $(OPTFLAG_BSDDB_CMD) $(OPTFLAG_YP_CMD) $(OPTFLAG_RPC_HDR_CMD) \
 	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/login_cap.o: login_cap.c
-	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/yp_check_int.o: yp_check_int.c
 	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/ypexclude_int.o: ypexclude_int.c
@@ -711,7 +730,8 @@ $(BUILDDIR)/libbsdadv.so: $(LIBBSDADV_OBJS) $(PORTABLE_OBJS)
 	      -o "$(BUILDDIR)/libbsdadv.so" $? $(LNK_LDFLAGS); \
 	else \
 	    "$(CC)" $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
-	      -o "$(BUILDDIR)/libbsdadv.so" $(LIBBSDADV_OBJS) $(LNK_LDFLAGS); \
+	      -o "$(BUILDDIR)/libbsdadv.so" \
+	      $(LIBBSDADV_OBJS) $(LNK_LDFLAGS); \
 	fi
 $(BUILDDIR)/libbsdadv.pc: libbsdadv.pc.in
 	if [ "$(ENABLE_DYNAMIC)" = "true" ] \
