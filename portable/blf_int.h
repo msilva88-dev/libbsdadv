@@ -40,8 +40,8 @@
  * include/blf.h
  */
 
-#ifndef _LIBBSD4_PORTABLE_BLF_INT_H
-#define _LIBBSD4_PORTABLE_BLF_INT_H
+#ifndef _LIBBSDADV_PORTABLE_BLF_INT_H
+#define _LIBBSDADV_PORTABLE_BLF_INT_H
 
 #include <sys/types.h>
 #include "../features.h"

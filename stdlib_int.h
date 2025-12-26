@@ -15,8 +15,8 @@
  * <https://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-#ifndef _LIBBSD4_STDLIB_INT_H
-#define _LIBBSD4_STDLIB_INT_H
+#ifndef _LIBBSDADV_STDLIB_INT_H
+#define _LIBBSDADV_STDLIB_INT_H
 
 #include <stdlib.h>
 #include "features.h"

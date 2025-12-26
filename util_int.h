@@ -15,8 +15,8 @@
  * <https://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-#ifndef _LIBBSD4_UTIL_INT_H
-#define _LIBBSD4_UTIL_INT_H
+#ifndef _LIBBSDADV_UTIL_INT_H
+#define _LIBBSDADV_UTIL_INT_H
 
 #ifdef LIBC_WITH_BSD
 #include <util.h>

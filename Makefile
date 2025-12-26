@@ -164,10 +164,10 @@ BUILD_LIBRARY_CMD != sh -c '\
 _DYNAMIC=""; \
 _STATIC=""; \
 _SP=""; \
-[ "$(ENABLE_DYNAMIC)" = "true" ] && _DYNAMIC="$(BUILDDIR)/libbsd4.so"; \
-[ "$(ENABLE_STATIC)" = "true" ] && _STATIC="$(BUILDDIR)/libbsd4.a"; \
+[ "$(ENABLE_DYNAMIC)" = "true" ] && _DYNAMIC="$(BUILDDIR)/libbsdadv.so"; \
+[ "$(ENABLE_STATIC)" = "true" ] && _STATIC="$(BUILDDIR)/libbsdadv.a"; \
 if [ -z "$${_DYNAMIC}" ] && [ -z "$${_STATIC}" ]; then \
-    _DYNAMIC="$(BUILDDIR)/libbsd4.so"; \
+    _DYNAMIC="$(BUILDDIR)/libbsdadv.so"; \
 fi; \
 [ -n "$${_DYNAMIC}" ] && _SP=" "; \
 printf "%s%s%s" "$${_DYNAMIC}" "$${_SP}" "$${_STATIC}" \
@@ -507,7 +507,7 @@ PORTABLE_OBJS += $(BUILDDIR)/portable/pw_dup_int.o
 PORTABLE_OBJS += $(PORTABLE_SHA2_INT_OBJ_CMD)
 PORTABLE_OBJS += $(BUILDDIR)/portable/strtonum_int.o
 PORTABLE_OBJS += $(BUILDDIR)/portable/timingsafe_bcmp_int.o
-LIBBSD4_BCRYPT_PBKDF_OBJ_CMD != sh -c '\
+LIBBSDADV_BCRYPT_PBKDF_OBJ_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
         printf "%s" "$(BUILDDIR)/bcrypt_pbkdf.o" \
@@ -517,7 +517,7 @@ case "$(ENABLE_BLF)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSD4_GETPWENT_OBJ_CMD != sh -c '\
+LIBBSDADV_GETPWENT_OBJ_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
         printf "%s" "$(BUILDDIR)/getpwent.o" \
@@ -527,7 +527,7 @@ case "$(ENABLE_GETPW)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSD4_YP_CHECK_INT_OBJ_CMD != sh -c '\
+LIBBSDADV_YP_CHECK_INT_OBJ_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
         case "$(ENABLE_YP)" in \
@@ -544,7 +544,7 @@ case "$(ENABLE_GETPW)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSD4_YPEXCLUDE_INT_OBJ_CMD != sh -c '\
+LIBBSDADV_YPEXCLUDE_INT_OBJ_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
         case "$(ENABLE_YP)" in \
@@ -561,15 +561,15 @@ case "$(ENABLE_GETPW)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSD4_OBJS := $(BUILDDIR)/authenticate.o $(BUILDDIR)/auth_subr.o
-LIBBSD4_OBJS += $(BUILDDIR)/bcrypt_int.o $(LIBBSD4_BCRYPT_PBKDF_OBJ_CMD)
-LIBBSD4_OBJS += $(BUILDDIR)/blowfish.o $(BUILDDIR)/check_expire.o
-LIBBSD4_OBJS += $(BUILDDIR)/cryptutil.o $(BUILDDIR)/fparseln.o
-LIBBSD4_OBJS += $(BUILDDIR)/getnetgrent.o $(LIBBSD4_GETPWENT_OBJ_CMD)
-LIBBSD4_OBJS += $(BUILDDIR)/login_cap.o $(LIBBSD4_YP_CHECK_INT_OBJ_CMD)
-LIBBSD4_OBJS += $(LIBBSD4_YPEXCLUDE_INT_OBJ_CMD)
+LIBBSDADV_OBJS := $(BUILDDIR)/authenticate.o $(BUILDDIR)/auth_subr.o
+LIBBSDADV_OBJS += $(BUILDDIR)/bcrypt_int.o $(LIBBSDADV_BCRYPT_PBKDF_OBJ_CMD)
+LIBBSDADV_OBJS += $(BUILDDIR)/blowfish.o $(BUILDDIR)/check_expire.o
+LIBBSDADV_OBJS += $(BUILDDIR)/cryptutil.o $(BUILDDIR)/fparseln.o
+LIBBSDADV_OBJS += $(BUILDDIR)/getnetgrent.o $(LIBBSDADV_GETPWENT_OBJ_CMD)
+LIBBSDADV_OBJS += $(BUILDDIR)/login_cap.o $(LIBBSDADV_YP_CHECK_INT_OBJ_CMD)
+LIBBSDADV_OBJS += $(LIBBSDADV_YPEXCLUDE_INT_OBJ_CMD)
 
-LIBBSD4_BLF_HDR_CMD != sh -c '\
+LIBBSDADV_BLF_HDR_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
         printf "%s" "blf.h" \
@@ -579,7 +579,7 @@ case "$(ENABLE_BLF)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSD4_PWD_HDR_CMD != sh -c '\
+LIBBSDADV_PWD_HDR_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
         case "$(ENABLE_BSDDB)" in \
@@ -596,7 +596,7 @@ case "$(ENABLE_GETPW)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSD4_UTIL_HDR_CMD != sh -c '\
+LIBBSDADV_UTIL_HDR_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
         printf "%s" "util_bsd4_with_blf.h" \
@@ -606,10 +606,10 @@ case "$(ENABLE_BLF)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSD4_HDRS := $(LIBBSD4_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
-LIBBSD4_HDRS += $(LIBBSD4_PWD_HDR_CMD) unistd_bsd4.h $(LIBBSD4_UTIL_HDR_CMD)
+LIBBSDADV_HDRS := $(LIBBSDADV_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
+LIBBSDADV_HDRS += $(LIBBSDADV_PWD_HDR_CMD) unistd_bsd4.h $(LIBBSDADV_UTIL_HDR_CMD)
 
-LIBBSD4_BLF_MAN_CMD != sh -c '\
+LIBBSDADV_BLF_MAN_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
         printf "%s" "bcrypt_pbkdf.3 blowfish.3" \
@@ -619,7 +619,7 @@ case "$(ENABLE_BLF)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSD4_GETPW_MAN_CMD != sh -c '\
+LIBBSDADV_GETPW_MAN_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
         printf "%s" "getpwent.3 getpwnam.3" \
@@ -629,9 +629,9 @@ case "$(ENABLE_GETPW)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSD4_MANS := authenticate.3 auth_subr.3 $(LIBBSD4_BLF_MAN_CMD)
-LIBBSD4_MANS += check_expire.3 crypt_checkpass.3 fparseln.3 getnetgrent.3
-LIBBSD4_MANS += $(LIBBSD4_GETPW_MAN_CMD) login_cap.3
+LIBBSDADV_MANS := authenticate.3 auth_subr.3 $(LIBBSDADV_BLF_MAN_CMD)
+LIBBSDADV_MANS += check_expire.3 crypt_checkpass.3 fparseln.3 getnetgrent.3
+LIBBSDADV_MANS += $(LIBBSDADV_GETPW_MAN_CMD) login_cap.3
 
 ## build
 
@@ -688,28 +688,28 @@ $(BUILDDIR)/portable/strtonum_int.o: portable/strtonum_int.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/timingsafe_bcmp_int.o: portable/timingsafe_bcmp_int.c
 	$(CC) $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
-$(BUILDDIR)/libbsd4.so: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
+$(BUILDDIR)/libbsdadv.so: $(LIBBSDADV_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
 	if [ "$(BUILD_PORTABLE_CMD)" = "true" ]; then \
 	    $(CC) $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
-	      -o "$(BUILDDIR)/libbsd4.so" $? $(LNK_LDFLAGS); \
+	      -o "$(BUILDDIR)/libbsdadv.so" $? $(LNK_LDFLAGS); \
 	else \
 	    $(CC) $(LDFLAGS) $(DFT_SHAREDLDFLAGS) \
-	      -o "$(BUILDDIR)/libbsd4.so" \
-              $(LIBBSD4_OBJS) $(COMMON_OBJS) $(LNK_LDFLAGS); \
+	      -o "$(BUILDDIR)/libbsdadv.so" \
+              $(LIBBSDADV_OBJS) $(COMMON_OBJS) $(LNK_LDFLAGS); \
 	fi
-$(BUILDDIR)/libbsd4.a: $(LIBBSD4_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
+$(BUILDDIR)/libbsdadv.a: $(LIBBSDADV_OBJS) $(COMMON_OBJS) $(PORTABLE_OBJS)
 	if [ "$(BUILD_PORTABLE_CMD)" = "true" ]; then \
-	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsd4.a" $?; \
+	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsdadv.a" $?; \
 	else \
-	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsd4.a" \
-              $(LIBBSD4_OBJS) $(COMMON_OBJS); \
+	    $(AR) $(ARFLAGS) "$(BUILDDIR)/libbsdadv.a" \
+              $(LIBBSDADV_OBJS) $(COMMON_OBJS); \
 	fi
 
 ## Install
 
 install: install-hdr install-lib install-man
 
-install-hdr: $(LIBBSD4_HDRS)
+install-hdr: $(LIBBSDADV_HDRS)
 	([ -d "$(DESTDIR)/$(PREFIX)" ] || [ "$(DESTDIR)/$(PREFIX)" = "/" ]) \
 	  || mkdir -pm "$(PFIXPERM)" "$(DESTDIR)/$(PREFIX)"
 	( \
@@ -746,8 +746,8 @@ install-hdr: $(LIBBSD4_HDRS)
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(SHAREDIR)"; \
 	fi
 
-	cp -p $(LIBBSD4_HDRS) "$(DESTDIR)/$(INCLUDEDIR)"
-	for FILE in $(LIBBSD4_HDRS); do \
+	cp -p $(LIBBSDADV_HDRS) "$(DESTDIR)/$(INCLUDEDIR)"
+	for FILE in $(LIBBSDADV_HDRS); do \
 	    chmod "$(INCFPERM)" \
 	      "$(DESTDIR)/$(INCLUDEDIR)/$${FILE}"; \
 	    chown "$(INCFOWN):$(INCFGRP)" \
@@ -795,7 +795,7 @@ install-lib:
 	fi
 
 	cp -p $(LIBS) "$(DESTDIR)/$(LIBDIR)"
-	for FILE in $(ls "$(BUILDDIR)/libbsd4."* | xargs -n1 basename); do \
+	for FILE in $(ls "$(BUILDDIR)/libbsdadv."* | xargs -n1 basename); do \
 	    chmod "$(LIBFPERM)" \
 	      "$(DESTDIR)/$(LIBDIR)/$${FILE}"; \
 	    chown "$(LIBFOWN):$(LIBFGRP)" \
@@ -804,7 +804,7 @@ install-lib:
 
 ## Install Manuals
 
-install-man: $(LIBBSD4_MANS)
+install-man: $(LIBBSDADV_MANS)
 	([ -d "$(DESTDIR)/$(PREFIX)" ] || [ "$(DESTDIR)/$(PREFIX)" = "/" ]) \
 	  || mkdir -pm "$(PFIXPERM)" "$(DESTDIR)/$(PREFIX)"
 	( \
@@ -873,8 +873,8 @@ install-man: $(LIBBSD4_MANS)
 	    [ "$(PERMS)" = "s" ] || chmod g+s "$(DESTDIR)/$(MANDIR)/man3"; \
 	fi
 
-	cp -p $(LIBBSD4_MANS) "$(DESTDIR)/$(MANDIR)/man3"
-	for FILE in $(LIBBSD4_MANS); do \
+	cp -p $(LIBBSDADV_MANS) "$(DESTDIR)/$(MANDIR)/man3"
+	for FILE in $(LIBBSDADV_MANS); do \
 	    chmod "$(MANFPERM)" \
 	      "$(DESTDIR)/$(MANDIR)/man3/$${FILE}"; \
 	    chown "$(MANFOWN):$(MANFGRP)" \

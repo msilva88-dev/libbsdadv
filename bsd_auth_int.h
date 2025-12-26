@@ -15,8 +15,8 @@
  * <https://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-#ifndef _LIBBSD4_BSD_AUTH_HIDDEN_INT_H
-#define _LIBBSD4_BSD_AUTH_HIDDEN_INT_H
+#ifndef _LIBBSDADV_BSD_AUTH_INT_H
+#define _LIBBSDADV_BSD_AUTH_INT_H
 
 #include "bsd_auth.h"
 #include "features.h"

@@ -15,8 +15,8 @@
  * <https://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-#ifndef _LIBBSD4_PWD_H
-#define _LIBBSD4_PWD_H
+#ifndef _LIBBSDADV_PWD_H
+#define _LIBBSDADV_PWD_H
 
 #include <pwd.h>
 

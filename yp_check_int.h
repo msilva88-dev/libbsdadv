@@ -17,8 +17,8 @@
 
 #include "features.h"
 
-#ifndef _LIBBSD4_YP_CHECK_INT_H
-#define _LIBBSD4_YP_CHECK_INT_H
+#ifndef _LIBBSDADV_YP_CHECK_INT_H
+#define _LIBBSDADV_YP_CHECK_INT_H
 
 int yp_check(char **) HIDDEN_A;
 

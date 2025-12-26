@@ -44,8 +44,8 @@
  * include/pwd.h
  */
 
-#ifndef _LIBBSD4_PORTABLE_PWD_INT_H
-#define _LIBBSD4_PORTABLE_PWD_INT_H
+#ifndef _LIBBSDADV_PORTABLE_PWD_INT_H
+#define _LIBBSDADV_PORTABLE_PWD_INT_H
 
 #include "../pwd_int.h"
 

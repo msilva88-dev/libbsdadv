@@ -1,5 +1,5 @@
-LibBSD4 - COPYRIGHT
-===================
+LibBSD licensed with advertising clause (BSD-4-Clause) - COPYRIGHT
+==================================================================
 
 1) Licensing model
 ------------------

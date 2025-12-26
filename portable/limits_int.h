@@ -15,8 +15,8 @@
  * <https://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-#ifndef _LIBBSD4_PORTABLE_LIMITS_INT_H
-#define _LIBBSD4_PORTABLE_LIMITS_INT_H
+#ifndef _LIBBSDADV_PORTABLE_LIMITS_INT_H
+#define _LIBBSDADV_PORTABLE_LIMITS_INT_H
 
 #include <limits.h>
 

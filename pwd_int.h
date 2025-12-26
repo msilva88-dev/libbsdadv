@@ -41,8 +41,8 @@
 
 /* pwd internal header from OpenBSD 7.0 source code: include/pwd.h */
 
-#ifndef _LIBBSD4_PWD_INT_H
-#define _LIBBSD4_PWD_INT_H
+#ifndef _LIBBSDADV_PWD_INT_H
+#define _LIBBSDADV_PWD_INT_H
 
 #include <sys/types.h>
 #include "features.h"

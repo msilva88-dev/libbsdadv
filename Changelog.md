@@ -66,4 +66,4 @@ Initial stable release.
 
 ---
 
-[1.0.0]: https://github.com/msilva88-dev/libbsd4/releases/tag/v1.0.0
+[1.0.0]: https://github.com/msilva88-dev/libbsdadv/releases/tag/v1.0.0

@@ -17,8 +17,8 @@
 
 #include <pthread.h>
 
-#ifndef _LIBBSD4_PTHREAD_INT_H
-#define _LIBBSD4_PTHREAD_INT_H
+#ifndef _LIBBSDADV_PTHREAD_INT_H
+#define _LIBBSDADV_PTHREAD_INT_H
 
 #define _THREAD_PRIVATE_KEY(name) \
 	static pthread_mutex_t name##_mutex = PTHREAD_MUTEX_INITIALIZER
