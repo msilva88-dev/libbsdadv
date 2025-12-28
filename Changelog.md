@@ -145,4 +145,4 @@ Initial stable release.
 
 ---
 
-[1.0.0]: https://github.com/msilva88-dev/libbsdadv/releases/tag/v1.0.0
+[1.0.0]: https://git.hyperbola.info:50100/hyperbolabsd/libbsdadv.git/tag/?h=v1.0.0
