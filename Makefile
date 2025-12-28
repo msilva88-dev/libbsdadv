@@ -488,6 +488,16 @@ case "$(ENABLE_BSDDB)" in \
         ;; \
 esac \
 ' 2>/dev/null
+LNK_LDFLAG_PTHREAD_CMD != sh -c '\
+case "$(CHOST)" in \
+    *-musl*|*-hyperbolabsd*) \
+        printf "%s%s" "" "" \
+        ;; \
+    *-gnu*|*bsd*|*) \
+        printf "%s%s" "-l" "pthread" \
+        ;; \
+esac; \
+' 2>/dev/null
 LNK_LDFLAG_YP_CMD != sh -c '\
 case "$(ENABLE_YP)" in \
     true) \
@@ -498,7 +508,8 @@ case "$(ENABLE_YP)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LNK_LDFLAGS := $(LNK_LDFLAG_BSDDB_CMD) $(LNK_LDFLAG_YP_CMD)
+LNK_LDFLAGS := $(LNK_LDFLAG_BSDDB_CMD) $(LNK_LDFLAG_PTHREAD_CMD)
+LNK_LDFLAGS += $(LNK_LDFLAG_YP_CMD)
 
 # Linker Flags for shared code
 DFT_SHAREDLDFLAGS := -shared
@@ -526,7 +537,14 @@ case "$(ENABLE_GETPW)" in \
                 printf "%s" "pwd_bsdadv.h" \
                 ;; \
             false|*) \
-                printf "%s" "pwd_bsdadv_without_bsddb.h" \
+                case "$(ENABLE_YP)" in \
+                    true) \
+                        printf "%s" "pwd_bsdadv_without_bsddb.h"; \
+                        ;; \
+                    false|*) \
+                        printf "%s" ""; \
+                        ;; \
+                esac \
                 ;; \
         esac \
         ;; \
@@ -564,7 +582,12 @@ esac \
 LIBBSDADV_GETPW_MAN_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
-        printf "%s" "getpwent.3 getpwnam.3" \
+        if [ "$(ENABLE_BSDDB)" != "true" ] && [ "$(ENABLE_YP)" != "true" ]; \
+        then \
+            printf "%s" ""; \
+        else \
+            printf "%s" "getpwent.3 getpwnam.3"; \
+        fi \
         ;; \
     false|*) \
         printf "%s" "" \
@@ -606,7 +629,12 @@ esac \
 LIBBSDADV_GETPWENT_OBJ_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
-        printf "%s" "$(BUILDDIR)/getpwent.o" \
+        if [ "$(ENABLE_BSDDB)" != "true" ] && [ "$(ENABLE_YP)" != "true" ]; \
+        then \
+            printf "%s" ""; \
+        else \
+            printf "%s" "$(BUILDDIR)/getpwent.o" \
+        fi \
         ;; \
     false|*) \
         printf "%s" "" \
