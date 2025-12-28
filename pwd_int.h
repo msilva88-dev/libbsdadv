@@ -89,6 +89,18 @@ struct passwd *pw_dup(const struct passwd *) HIDDEN_A;
 #define _PW_BUF_LEN 1024
 #endif
 
+#ifndef _PW_KEYBYNAME
+#define _PW_KEYBYNAME '1'
+#endif
+
+#ifndef _PW_KEYBYUID
+#define _PW_KEYBYUID '3'
+#endif
+
+#ifndef _PW_YPTOKEN
+#define _PW_YPTOKEN "__YP!"
+#endif
+
 int _bcrypt_autorounds(void) HIDDEN_A;
 
 #endif

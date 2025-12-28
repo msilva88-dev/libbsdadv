@@ -41,30 +41,34 @@
 
 #define _BSD_SOURCE
 #define _GNU_SOURCE
-#include <sys/param.h> /* ALIGN */
 #include <sys/mman.h>
-#include <fcntl.h>
+#include <sys/param.h> /* ALIGN */
 #ifdef BSDDB
-#include <bsdb.h>
+#include <bsddb.h>
 #endif
-#include <syslog.h>
 #include <errno.h>
-#include <unistd.h>
+#include <fcntl.h>
 #include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
 #ifdef YP
 #include <stdio.h>
+#endif
+#include <stdlib.h>
+#include <string.h>
+#include <syslog.h>
+#include <unistd.h>
+#ifdef YP
 #include <rpc/rpc.h>
 #include <rpcsvc/yp.h>
 #include <rpcsvc/ypclnt.h>
-#include "yp_check_int.h"
-#include "ypexclude_int.h"
 #endif
 #include "getpwent_int.h"
 #include "netgroup.h"
-#include "portable/limits_int.h"
 #include "pthread_int.h"
+#ifdef YP
+#include "yp_check_int.h"
+#include "ypexclude_int.h"
+#include "portable/limits_int.h"
+#endif
 
 #define MINIMUM(a, b) (((a) < (b)) ? (a) : (b))
 
