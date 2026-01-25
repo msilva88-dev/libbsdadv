@@ -34,6 +34,7 @@ ENABLE_BLF = false
 ENABLE_BSDDB = false
 ENABLE_DYNAMIC = false
 ENABLE_GETPW = false
+ENABLE_RCMD = false
 ENABLE_STATIC = false
 ENABLE_YP = false
 FILEGRP = root
@@ -80,6 +81,7 @@ SHAREDIR = $(PREFIX)/share
 SHRDOWN = $(DIRGRP)
 SHRDGRP = $(DIROWN)
 SHRDPERM = $(DIRPERM)
+USE_INTERNAL_ISSETUGID = $(USE_INTERNAL_ISSETUGID_CMD)
 USE_LIBC_WITH_BSDLIB = $(USE_LIBC_WITH_BSDLIB_CMD)
 VER = $(VER_MAJOR).$(VER_MINOR).$(VER_REV)
 VER_MAJOR = 1
@@ -149,12 +151,28 @@ esac \
 ' 2>/dev/null
 
 # Target libc flags
+USE_INTERNAL_ISSETUGID_CMD != sh -c '\
+case "$(CHOST)" in \
+    *-hyperbolabsd*|*-openbsd*) \
+        printf "%s" "false" \
+        ;; \
+    *-linux-musl*) \
+        printf "%s" "false" \
+        ;; \
+    *-linux-gnu*|*) \
+        printf "%s" "true" \
+        ;; \
+esac \
+' 2>/dev/null
 USE_LIBC_WITH_BSDLIB_CMD != sh -c '\
 case "$(CHOST)" in \
     *-hyperbolabsd*|*-openbsd*) \
         printf "%s" "true" \
         ;; \
-    *-linux-gnu*|*-linux-musl*|*) \
+    *-linux-musl*) \
+        printf "%s" "false" \
+        ;; \
+    *-linux-gnu*|*) \
         printf "%s" "false" \
         ;; \
 esac \
@@ -237,6 +255,16 @@ case "$(ENABLE_BSDDB)" in \
         ;; \
 esac \
 ' 2>/dev/null
+OPTFLAG_INT_ISSETUGID_CMD != sh -c '\
+case "$(USE_INTERNAL_ISSETUGID)" in \
+    true) \
+        printf "%s%s" "-D" "INT_ISSETUGID" \
+        ;; \
+    false|*) \
+        printf "%s%s" "" "" \
+        ;; \
+esac \
+' 2>/dev/null
 OPTFLAG_LIBCBSD_CMD != sh -c '\
 case "$(USE_LIBC_WITH_BSDLIB)" in \
     true) \
@@ -247,6 +275,16 @@ case "$(USE_LIBC_WITH_BSDLIB)" in \
         ;; \
 esac \
 ' 2>/dev/null
+OPTFLAG_RPC_HDR_CMD != sh -c '\
+case "$(ENABLE_YP):$(ENABLE_RCMD)" in \
+    true:*|*:true) \
+        $(PKG_CONFIG) --cflags libtirpc \
+        ;; \
+    *) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
 OPTFLAG_YP_CMD != sh -c '\
 case "$(ENABLE_YP)" in \
     true) \
@@ -254,16 +292,6 @@ case "$(ENABLE_YP)" in \
         ;; \
     false|*) \
         printf "%s%s" "" "" \
-        ;; \
-esac \
-' 2>/dev/null
-OPTFLAG_RPC_HDR_CMD != sh -c '\
-case "$(ENABLE_YP)" in \
-    true) \
-        $(PKG_CONFIG) --cflags libtirpc \
-        ;; \
-    false|*) \
-        printf "%s" "" \
         ;; \
 esac \
 ' 2>/dev/null
@@ -498,18 +526,28 @@ case "$(CHOST)" in \
         ;; \
 esac; \
 ' 2>/dev/null
-LNK_LDFLAG_YP_CMD != sh -c '\
+LNK_LDFLAG_NSL_CMD != sh -c '\
 case "$(ENABLE_YP)" in \
     true) \
-        printf "%s%s %s%s" "-l" "tirpc" "-l" "nsl" \
+        printf "%s%s" "-l" "nsl" \
         ;; \
     false|*) \
         printf "%s%s" "" "" \
         ;; \
 esac \
 ' 2>/dev/null
+LNK_LDFLAG_RPC_CMD != sh -c '\
+case "$(ENABLE_RCMD):$(ENABLE_YP)" in \
+    true:*|*:true) \
+        printf "%s%s" "-l" "tirpc" \
+        ;; \
+    *) \
+        printf "%s%s" "" "" \
+        ;; \
+esac \
+' 2>/dev/null
 LNK_LDFLAGS := $(LNK_LDFLAG_BSDDB_CMD) $(LNK_LDFLAG_PTHREAD_CMD)
-LNK_LDFLAGS += $(LNK_LDFLAG_YP_CMD)
+LNK_LDFLAGS += $(LNK_LDFLAG_NSL_CMD) $(LNK_LDFLAG_RPC_CMD)
 
 # Linker Flags for shared code
 DFT_SHAREDLDFLAGS := -shared
@@ -523,6 +561,16 @@ LIBBSDADV_BLF_HDR_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
         printf "%s" "blf.h" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_NETDB_HDR_CMD != sh -c '\
+case "$(ENABLE_RCMD)" in \
+    true) \
+        printf "%s" "netdb_bsdadv.h" \
         ;; \
     false|*) \
         printf "%s" "" \
@@ -553,6 +601,16 @@ case "$(ENABLE_GETPW)" in \
         ;; \
 esac \
 ' 2>/dev/null
+LIBBSDADV_UNISTD_HDR_CMD != sh -c '\
+case "$(ENABLE_RCMD)" in \
+    true) \
+        printf "%s" "unistd_bsdadv_with_rcmd.h" \
+        ;; \
+    false|*) \
+        printf "%s" "unistd_bsdadv.h" \
+        ;; \
+esac \
+' 2>/dev/null
 LIBBSDADV_UTIL_HDR_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
@@ -564,8 +622,8 @@ case "$(ENABLE_BLF)" in \
 esac \
 ' 2>/dev/null
 LIBBSDADV_HDRS := $(LIBBSDADV_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
-LIBBSDADV_HDRS += $(LIBBSDADV_PWD_HDR_CMD) unistd_bsdadv.h
-LIBBSDADV_HDRS += $(LIBBSDADV_UTIL_HDR_CMD)
+LIBBSDADV_HDRS += $(LIBBSDADV_NETDB_HDR_CMD) $(LIBBSDADV_PWD_HDR_CMD)
+LIBBSDADV_HDRS += $(LIBBSDADV_UNISTD_HDR_CMD) $(LIBBSDADV_UTIL_HDR_CMD)
 
 LIBBSDADV_LIBS := $(BUILD_LIBBSDADV_CMD)
 
@@ -582,12 +640,24 @@ esac \
 LIBBSDADV_GETPW_MAN_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
-        if [ "$(ENABLE_BSDDB)" != "true" ] && [ "$(ENABLE_YP)" != "true" ]; \
-        then \
-            printf "%s" ""; \
-        else \
-            printf "%s" "getpwent.3 getpwnam.3"; \
-        fi \
+        case "$(ENABLE_BSDDB):$(ENABLE_YP)" in \
+            true:*|*:true) \
+                printf "%s" "getpwent.3 getpwnam.3" \
+                ;; \
+            *) \
+                printf "%s" "" \
+                ;; \
+        esac \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_RCMD_MAN_CMD != sh -c '\
+case "$(ENABLE_RCMD)" in \
+    true) \
+        printf "%s" "rcmd.3" \
         ;; \
     false|*) \
         printf "%s" "" \
@@ -597,7 +667,36 @@ esac \
 LIBBSDADV_MANS := authenticate.3 auth_subr.3 $(LIBBSDADV_BLF_MAN_CMD)
 LIBBSDADV_MANS += check_expire.3 crypt_checkpass.3 fparseln.3 getnetgrent.3
 LIBBSDADV_MANS += $(LIBBSDADV_GETPW_MAN_CMD) login_cap.3
+LIBBSDADV_MANS += $(LIBBSDADV_RCMD_MAN_CMD)
 
+INT_ISSETUGID_INT_OBJ_CMD != sh -c '\
+case "$(USE_INTERNAL_ISSETUGID_CMD)" in \
+    true) \
+        case "$(ENABLE_RCMD)" in \
+            true) \
+                printf "%s" "$(BUILDDIR)/portable/issetugid_int.o" \
+                ;; \
+            false|*) \
+                printf "%s" "" \
+                ;; \
+        esac \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+INT_OBJS := $(INT_ISSETUGID_INT_OBJ_CMD)
+PORTABLE_RCMDSH_INT_OBJ_CMD != sh -c '\
+case "$(ENABLE_RCMD)" in \
+    true) \
+        printf "%s" "$(BUILDDIR)/portable/rcmdsh_int.o" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
 PORTABLE_SHA2_INT_OBJ_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
@@ -613,6 +712,7 @@ PORTABLE_OBJS += $(BUILDDIR)/portable/bcrypt_int_ptb.o
 PORTABLE_OBJS += $(BUILDDIR)/portable/getcap_int.o
 PORTABLE_OBJS += $(BUILDDIR)/portable/passwd_int.o
 PORTABLE_OBJS += $(BUILDDIR)/portable/pw_dup_int.o
+PORTABLE_OBJS += $(PORTABLE_RCMDSH_INT_OBJ_CMD)
 PORTABLE_OBJS += $(PORTABLE_SHA2_INT_OBJ_CMD)
 PORTABLE_OBJS += $(BUILDDIR)/portable/strtonum_int.o
 PORTABLE_OBJS += $(BUILDDIR)/portable/timingsafe_bcmp_int.o
@@ -629,12 +729,44 @@ esac \
 LIBBSDADV_GETPWENT_OBJ_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
-        if [ "$(ENABLE_BSDDB)" != "true" ] && [ "$(ENABLE_YP)" != "true" ]; \
-        then \
-            printf "%s" ""; \
-        else \
-            printf "%s" "$(BUILDDIR)/getpwent.o" \
-        fi \
+        case "$(ENABLE_BSDDB):$(ENABLE_YP)" in \
+            true:*|*:true) \
+                printf "%s" "$(BUILDDIR)/getpwent.o" \
+                ;; \
+            *) \
+                printf "%s" "" \
+                ;; \
+        esac \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_RCMD_OBJ_CMD != sh -c '\
+case "$(ENABLE_RCMD)" in \
+    true) \
+        printf "%s" "$(BUILDDIR)/rcmd.o" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_RRESVPORT_OBJ_CMD != sh -c '\
+case "$(ENABLE_RCMD)" in \
+    true) \
+        printf "%s" "$(BUILDDIR)/rresvport.o" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_RUSEROK_OBJ_CMD != sh -c '\
+case "$(ENABLE_RCMD)" in \
+    true) \
+        printf "%s" "$(BUILDDIR)/ruserok.o" \
         ;; \
     false|*) \
         printf "%s" "" \
@@ -680,8 +812,10 @@ LIBBSDADV_OBJS += $(BUILDDIR)/bcrypt_int.o $(LIBBSDADV_BCRYPT_PBKDF_OBJ_CMD)
 LIBBSDADV_OBJS += $(BUILDDIR)/blowfish.o $(BUILDDIR)/check_expire.o
 LIBBSDADV_OBJS += $(BUILDDIR)/cryptutil.o $(BUILDDIR)/fparseln.o
 LIBBSDADV_OBJS += $(BUILDDIR)/getnetgrent.o $(LIBBSDADV_GETPWENT_OBJ_CMD)
-LIBBSDADV_OBJS += $(BUILDDIR)/login_cap.o $(LIBBSDADV_YP_CHECK_INT_OBJ_CMD)
-LIBBSDADV_OBJS += $(LIBBSDADV_YPEXCLUDE_INT_OBJ_CMD)
+LIBBSDADV_OBJS += $(LIBBSDADV_RCMD_OBJ_CMD) $(LIBBSDADV_RRESVPORT_OBJ_CMD)
+LIBBSDADV_OBJS += $(LIBBSDADV_RUSEROK_OBJ_CMD) $(BUILDDIR)/login_cap.o
+LIBBSDADV_OBJS += $(LIBBSDADV_YP_CHECK_INT_OBJ_CMD)
+LIBBSDADV_OBJS += $(LIBBSDADV_YPEXCLUDE_INT_OBJ_CMD) $(INT_OBJS)
 
 LIBBSDADV_PCS := $(BUILDDIR)/libbsdadv.pc
 
@@ -726,6 +860,15 @@ $(BUILDDIR)/getpwent.o: getpwent.c
 $(BUILDDIR)/login_cap.o: login_cap.c
 	"$(CC)" $(CFLAGS) $(OPTFLAG_LIBCBSD_CMD) \
 	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
+$(BUILDDIR)/rcmd.o: rcmd.c
+	"$(CC)" $(CFLAGS) $(OPTFLAG_RPC_HDR_CMD) \
+	  $(OPTFLAG_INT_ISSETUGID_CMD) $(OPTFLAG_LIBCBSD_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
+$(BUILDDIR)/rresvport.o: rresvport.c
+	"$(CC)" $(CFLAGS) $(OPTFLAG_RPC_HDR_CMD) \
+	  $(DFT_LIBFLAGS_CMD) -c $? -o $@
+$(BUILDDIR)/ruserok.o: ruserok.c
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/yp_check_int.o: yp_check_int.c
 	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/ypexclude_int.o: ypexclude_int.c
@@ -736,9 +879,13 @@ $(BUILDDIR)/portable/bcrypt_int_ptb.o: portable/bcrypt_int_ptb.c
 	"$(CC)" $(CFLAGS) $(OPTFLAG_BLF_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/getcap_int.o: portable/getcap_int.c
 	"$(CC)" $(CFLAGS) $(OPTFLAG_BSDDB_CMD) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+$(BUILDDIR)/portable/issetugid_int.o: portable/issetugid_int.c
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/passwd_int.o: portable/passwd_int.c
 	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/pw_dup_int.o: portable/pw_dup_int.c
+	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
+$(BUILDDIR)/portable/rcmdsh_int.o: portable/rcmdsh_int.c
 	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
 $(BUILDDIR)/portable/sha2_int.o: portable/sha2_int.c
 	"$(CC)" $(CFLAGS) $(DFT_LIBFLAGS_CMD) -c $? -o $@
@@ -832,6 +979,9 @@ install-hdr: $(LIBBSDADV_HDRS)
 	[ ! -f "$(DESTDIR)/$(INCLUDEDIR)/util_bsdadv_with_blf.h" ] \
 	  || mv "$(DESTDIR)/$(INCLUDEDIR)/util_bsdadv_with_blf.h" \
 	  "$(DESTDIR)/$(INCLUDEDIR)/util_bsdadv.h"
+	[ ! -f "$(DESTDIR)/$(INCLUDEDIR)/unistd_bsdadv_with_rcmd.h" ] \
+	  || mv "$(DESTDIR)/$(INCLUDEDIR)/unistd_bsdadv_with_rcmd.h" \
+	  "$(DESTDIR)/$(INCLUDEDIR)/unistd_bsdadv.h"
 
 ## Install libraries
 
