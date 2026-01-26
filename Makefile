@@ -34,6 +34,7 @@ ENABLE_BLF = false
 ENABLE_BSDDB = false
 ENABLE_DYNAMIC = false
 ENABLE_GETPW = false
+ENABLE_NETGRP = false
 ENABLE_RCMD = false
 ENABLE_STATIC = false
 ENABLE_YP = false
@@ -577,6 +578,16 @@ case "$(ENABLE_RCMD)" in \
         ;; \
 esac \
 ' 2>/dev/null
+LIBBSDADV_NETGROUP_HDR_CMD != sh -c '\
+case "$(ENABLE_NETGRP)" in \
+    true) \
+        printf "%s" "netgroup.h" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
 LIBBSDADV_PWD_HDR_CMD != sh -c '\
 case "$(ENABLE_GETPW)" in \
     true) \
@@ -621,9 +632,10 @@ case "$(ENABLE_BLF)" in \
         ;; \
 esac \
 ' 2>/dev/null
-LIBBSDADV_HDRS := $(LIBBSDADV_BLF_HDR_CMD) bsd_auth.h netgroup.h login_cap.h
-LIBBSDADV_HDRS += $(LIBBSDADV_NETDB_HDR_CMD) $(LIBBSDADV_PWD_HDR_CMD)
-LIBBSDADV_HDRS += $(LIBBSDADV_UNISTD_HDR_CMD) $(LIBBSDADV_UTIL_HDR_CMD)
+LIBBSDADV_HDRS := $(LIBBSDADV_BLF_HDR_CMD) bsd_auth.h login_cap.h
+LIBBSDADV_HDRS += $(LIBBSDADV_NETDB_HDR_CMD) $(LIBBSDADV_NETGROUP_HDR_CMD)
+LIBBSDADV_HDRS += $(LIBBSDADV_PWD_HDR_CMD) $(LIBBSDADV_UNISTD_HDR_CMD)
+LIBBSDADV_HDRS += $(LIBBSDADV_UTIL_HDR_CMD)
 
 LIBBSDADV_LIBS := $(BUILD_LIBBSDADV_CMD)
 
@@ -654,6 +666,16 @@ case "$(ENABLE_GETPW)" in \
         ;; \
 esac \
 ' 2>/dev/null
+LIBBSDADV_NETGRP_MAN_CMD != sh -c '\
+case "$(ENABLE_NETGRP)" in \
+    true) \
+        printf "%s" "getnetgrent.3" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
 LIBBSDADV_RCMD_MAN_CMD != sh -c '\
 case "$(ENABLE_RCMD)" in \
     true) \
@@ -665,9 +687,9 @@ case "$(ENABLE_RCMD)" in \
 esac \
 ' 2>/dev/null
 LIBBSDADV_MANS := authenticate.3 auth_subr.3 $(LIBBSDADV_BLF_MAN_CMD)
-LIBBSDADV_MANS += check_expire.3 crypt_checkpass.3 fparseln.3 getnetgrent.3
-LIBBSDADV_MANS += $(LIBBSDADV_GETPW_MAN_CMD) login_cap.3
-LIBBSDADV_MANS += $(LIBBSDADV_RCMD_MAN_CMD)
+LIBBSDADV_MANS += check_expire.3 crypt_checkpass.3 fparseln.3
+LIBBSDADV_MANS += $(LIBBSDADV_GETPW_MAN_CMD) $(LIBBSDADV_NETGRP_MAN_CMD)
+LIBBSDADV_MANS += login_cap.3 $(LIBBSDADV_RCMD_MAN_CMD)
 
 INT_ISSETUGID_INT_OBJ_CMD != sh -c '\
 case "$(USE_INTERNAL_ISSETUGID_CMD)" in \
@@ -720,6 +742,16 @@ LIBBSDADV_BCRYPT_PBKDF_OBJ_CMD != sh -c '\
 case "$(ENABLE_BLF)" in \
     true) \
         printf "%s" "$(BUILDDIR)/bcrypt_pbkdf.o" \
+        ;; \
+    false|*) \
+        printf "%s" "" \
+        ;; \
+esac \
+' 2>/dev/null
+LIBBSDADV_GETNETGRENT_OBJ_CMD != sh -c '\
+case "$(ENABLE_NETGRP)" in \
+    true) \
+        printf "%s" "$(BUILDDIR)/getnetgrent.o" \
         ;; \
     false|*) \
         printf "%s" "" \
@@ -811,10 +843,10 @@ LIBBSDADV_OBJS := $(BUILDDIR)/authenticate.o $(BUILDDIR)/auth_subr.o
 LIBBSDADV_OBJS += $(BUILDDIR)/bcrypt_int.o $(LIBBSDADV_BCRYPT_PBKDF_OBJ_CMD)
 LIBBSDADV_OBJS += $(BUILDDIR)/blowfish.o $(BUILDDIR)/check_expire.o
 LIBBSDADV_OBJS += $(BUILDDIR)/cryptutil.o $(BUILDDIR)/fparseln.o
-LIBBSDADV_OBJS += $(BUILDDIR)/getnetgrent.o $(LIBBSDADV_GETPWENT_OBJ_CMD)
-LIBBSDADV_OBJS += $(LIBBSDADV_RCMD_OBJ_CMD) $(LIBBSDADV_RRESVPORT_OBJ_CMD)
-LIBBSDADV_OBJS += $(LIBBSDADV_RUSEROK_OBJ_CMD) $(BUILDDIR)/login_cap.o
-LIBBSDADV_OBJS += $(LIBBSDADV_YP_CHECK_INT_OBJ_CMD)
+LIBBSDADV_OBJS += $(LIBBSDADV_GETNETGRENT_OBJ_CMD)
+LIBBSDADV_OBJS += $(LIBBSDADV_GETPWENT_OBJ_CMD) $(LIBBSDADV_RCMD_OBJ_CMD)
+LIBBSDADV_OBJS += $(LIBBSDADV_RRESVPORT_OBJ_CMD) $(LIBBSDADV_RUSEROK_OBJ_CMD)
+LIBBSDADV_OBJS += $(BUILDDIR)/login_cap.o $(LIBBSDADV_YP_CHECK_INT_OBJ_CMD)
 LIBBSDADV_OBJS += $(LIBBSDADV_YPEXCLUDE_INT_OBJ_CMD) $(INT_OBJS)
 
 LIBBSDADV_PCS := $(BUILDDIR)/libbsdadv.pc
