@@ -3,6 +3,40 @@
 This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-01-26
+
+### Added
+- New modular BSD remote command support:
+  - Introduced the entirely new `ENABLE_RCMD` Makefile flag,
+    enabling optional build and installation
+    of BSD remote command/user routines (`rcmd`, `rresvport`, `ruserok`)
+    and their internal support (`rcmdsh/issetugid`), headers,
+    and manual pages.
+    New sources: `rcmd.c`, `rresvport.c`, `ruserok.c`, `portablercmdsh_int.c`,
+    `portable/issetugid_int.c`, `netdb_bsdadv.h`, `unistd_bsdadv_with_rcmd.h`,
+    `rcmd.3`.
+  - Installation logic, object lists, and linker flags
+    are now strictly conditional—these features are compiled, installed,
+    and linked only when enabled, for cleaner packaging and maintenance.
+  - Renaming of headers (such as `unistd_bsdadv_with_rcmd.h`) on install
+    is now automatic based on feature selection.
+- Added modular netgroup support:
+  - The `ENABLE_NETGRP` Makefile flag
+    now controls whether netgroup-related code (`getnetgrent.o`),
+    headers (`netgroup.h`), and manpages (`getnetgrent.3`)
+    are built and installed. All Makefile lists for headers, documentation,
+    and objects are now generated according to netgroup configuration.
+
+### Changed
+- All relevant Makefile object/headers/manpage lists
+  now process `ENABLE_NETGRP` flag
+  for explicit control of optional netgroup APIs.
+- Netgroup support is now truly optional:
+  Makefile object lists and install rules
+  no longer assume netgroup must always be present.
+
+---
+
 ## [1.0.0] - 2025-12-10
 Initial stable release.
 
@@ -146,3 +180,4 @@ Initial stable release.
 ---
 
 [1.0.0]: https://git.hyperbola.info:50100/hyperbolabsd/libbsdadv.git/tag/?h=v1.0.0
+[1.1.0]: https://git.hyperbola.info:50100/hyperbolabsd/libbsdadv.git/tag/?h=v1.1.0
